@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const url = new URL('https://panda-market-api-crud.vercel.app/articles')
+const url = new URL("https://panda-market-api-crud.vercel.app/articles");
 
 export class Article {
   constructor(title, content, writer, likeCount, image) {
@@ -17,7 +17,7 @@ export class Article {
 }
 
 export function getArticleList(page = 1, pageSize = 10, keyword = "") {
-  return axios 
+  return axios
     .get(`${url}`, {
       params: {
         page,
@@ -26,15 +26,13 @@ export function getArticleList(page = 1, pageSize = 10, keyword = "") {
       },
     })
     .then((res) => {
-      return res.data; 
+      return res.data;
     })
     .catch((error) => {
       console.error("Error fetching articles:", error);
       throw error;
     });
 }
-
-
 
 export function getArticle(articleId) {
   axios
@@ -46,8 +44,6 @@ export function getArticle(articleId) {
       console.log(err);
     });
 }
-
-
 
 export function createArticle(title, content, image) {
   axios
@@ -64,15 +60,9 @@ export function createArticle(title, content, image) {
     });
 }
 
-
-
-
 export function patchArticle(articleId, updates) {
   axios
-    .patch(
-      `${url}/${articleId}`,
-      updates
-    )
+    .patch(`${url}/${articleId}`, updates)
     .then((res) => {
       return res.data;
     })
@@ -80,10 +70,6 @@ export function patchArticle(articleId, updates) {
       console.error(err);
     });
 }
-
-
-
-
 
 export function deleteArticle(articleId) {
   axios
@@ -95,5 +81,3 @@ export function deleteArticle(articleId) {
       console.log(err);
     });
 }
-
-

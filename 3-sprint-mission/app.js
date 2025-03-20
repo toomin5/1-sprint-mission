@@ -1,15 +1,15 @@
 import express from "express";
 import cors from "cors";
 import path from "path";
-import { PORT, PUBLIC_PATH, STATIC_PATH } from "./lib/constants.js";
-import articlesRouter from "./routers/articlesRouter.js";
-import productsRouter from "./routers/productsRouter.js";
-import commentsRouter from "./routers/commentsRouter.js";
-import imagesRouter from "./routers/imagesRouter.js";
+import { PORT, PUBLIC_PATH, STATIC_PATH } from "./src/lib/constants.js";
+import articlesRouter from "./src/routes/articlesRouter.js";
+import productsRouter from "./src/routes/productsRouter.js";
+import commentsRouter from "./src/routes/commentsRouter.js";
+import imagesRouter from "./src/routes/imagesRouter.js";
 import {
   defaultNotFoundHandler,
   globalErrorHandler,
-} from "./controllers/errorController.js";
+} from "./src/controllers/errorController.js";
 
 const app = express();
 

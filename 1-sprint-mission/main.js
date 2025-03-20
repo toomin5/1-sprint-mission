@@ -11,7 +11,7 @@ async function createProductInstance() {
   try {
     
     const productListData = await getProductList();
-   
+
     productListData.list.forEach((res) => {
       if (res.tags?.includes("전자제품")) {
         const electronicProduct = new ElectronicProduct(

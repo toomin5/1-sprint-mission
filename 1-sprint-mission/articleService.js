@@ -5,7 +5,7 @@ const url = new URL("https://panda-market-api-crud.vercel.app/articles");
 export class Article {
   constructor(title, content, writer, likeCount, image) {
     this.title = title;
-    this.content = content;
+    this.content = content; 
     this.writer = writer;
     this.image = image;
     this.likeCount = likeCount;

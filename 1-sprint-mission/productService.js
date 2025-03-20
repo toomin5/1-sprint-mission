@@ -66,7 +66,7 @@ export async function getProduct(productId) {
 export async function createProduct(price, description, name, tags, images) {
   try {
     const res = await axios.post(
-      `${url}`, // URL 다시 확인
+      `${url}`, 
       {
         price,
         description,
@@ -77,7 +77,7 @@ export async function createProduct(price, description, name, tags, images) {
     );
     return res.data;
   } catch (error) {
-    console.error("API 요청 오류:", error); //
+    console.error("API 요청 오류:", error); 
     if (error.response) {
       console.error("응답 데이터:", error.response.data);
     } else if (error.request) {

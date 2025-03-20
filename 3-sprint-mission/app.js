@@ -6,6 +6,7 @@ import articlesRouter from "./src/routes/articlesRouter.js";
 import productsRouter from "./src/routes/productsRouter.js";
 import commentsRouter from "./src/routes/commentsRouter.js";
 import imagesRouter from "./src/routes/imagesRouter.js";
+import userRouter from "./src/routes/userRouter.js";
 import {
   defaultNotFoundHandler,
   globalErrorHandler,
@@ -21,6 +22,7 @@ app.use("/articles", articlesRouter);
 app.use("/products", productsRouter);
 app.use("/comments", commentsRouter);
 app.use("/images", imagesRouter);
+app.use("/users", userRouter);
 
 app.use(defaultNotFoundHandler);
 app.use(globalErrorHandler);

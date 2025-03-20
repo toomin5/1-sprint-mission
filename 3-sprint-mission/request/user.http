@@ -1,0 +1,9 @@
+### 회원가입
+POST http://localhost:3000/users 
+Content-Type: application/json
+
+{
+  "email":"twomean99@gmail.com",
+  "nickname":"닉네임1234",
+  "password":"12341234"
+}

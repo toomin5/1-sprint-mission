@@ -13,16 +13,22 @@ import {
 } from "../structs/commentsStruct.js";
 
 export async function createProduct(req, res) {
-  const { name, description, price, tags, images } = create(
-    req.body,
-    CreateProductBodyStruct
-  );
+  const { userId } = req.user;
+  const { name, description, price, tags, images } = req.body;
+  try {
+    if (!userId) {
+      return res.status(401).json({ message: "unauthorized." });
+    }
 
-  const product = await prismaClient.product.create({
-    data: { name, description, price, tags, images },
-  });
+    const newProduct = await prismaClient.product.create({
+      data: { name, description, price, tags, images },
+    });
 
-  res.status(201).send(product);
+    res.status(201).json(newProduct);
+  } catch (error) {
+    console.error("error:", error);
+    res.status(500).json({ message: "internal server error" });
+  }
 }
 
 export async function getProduct(req, res) {

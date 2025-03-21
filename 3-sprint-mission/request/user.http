@@ -3,8 +3,8 @@ POST http://localhost:3000/users
 Content-Type: application/json
 
 {
-  "email":"twomean99@gmail.com",
-  "nickname":"닉네임1234",
+  "email":"f@gmail.com",
+  "nickname":"8번유저",
   "password":"12341234"
 }
 

@@ -1,16 +1,11 @@
 import { create } from "superstruct";
 import { prismaClient } from "../lib/prismaClient.js";
 import NotFoundError from "../lib/errors/NotFoundError.js";
-import { IdParamsStruct } from "../structs/commonStructs.js";
 import {
   CreateArticleBodyStruct,
   UpdateArticleBodyStruct,
-  GetArticleListParamsStruct,
 } from "../structs/articlesStructs.js";
-import {
-  CreateCommentBodyStruct,
-  GetCommentListParamsStruct,
-} from "../structs/commentsStruct.js";
+import { CreateCommentBodyStruct } from "../structs/commentsStruct.js";
 
 export async function createArticle(req, res) {
   const data = create(req.body, CreateArticleBodyStruct);
@@ -61,10 +56,7 @@ export async function deleteArticle(req, res) {
 }
 
 export async function getArticleList(req, res) {
-  const { page, pageSize, orderBy, keyword } = create(
-    req.query,
-    GetArticleListParamsStruct
-  );
+  const { page, pageSize, orderBy, keyword } = create(req.query);
 
   const where = {
     title: keyword ? { contains: keyword } : undefined,

@@ -1,6 +1,6 @@
 import * as s from "superstruct";
 
-const CreateUser = s.object({
+export const CreateUser = s.object({
   id: s.min(s.integer(), 0),
   email: s.size(s.string(), 1, 255),
   nickname: s.size(s.string(), 1, 20),

@@ -1,19 +1,9 @@
-import {
-  coerce,
-  nonempty,
-  nullable,
-  object,
-  partial,
-  string,
-} from "superstruct";
-import { PageParamsStruct } from "./commonStructs.js";
+import * as s from "superstruct";
 
-export const GetArticleListParamsStruct = PageParamsStruct;
-
-export const CreateArticleBodyStruct = object({
-  title: coerce(nonempty(string()), string(), (value) => value.trim()),
-  content: nonempty(string()),
-  image: nullable(string()),
+export const CreateArticleBodyStruct = s.object({
+  title: s.size(s.string(), 1, 50),
+  content: s.size(s.string(), 1, 255),
+  image: s.optional(s.size(s.string(), 1, 255)),
 });
 
-export const UpdateArticleBodyStruct = partial(CreateArticleBodyStruct);
+export const UpdateArticleBodyStruct = s.partial(CreateArticleBodyStruct);

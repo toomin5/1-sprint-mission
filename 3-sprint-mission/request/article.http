@@ -26,3 +26,12 @@ Content-Type: application/json
   "title":"API로 수정된 게시글",
   "content":"추가로 수정된 게시글 입니다."
 }
+
+###
+POST http://localhost:3000/articles/1/comments
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0MjU0ODg1OCwiZXhwIjoxNzQyNTUyNDU4fQ.ta9KCxBE2GHmJZIja3xo45op0vvhOlgZcYWt_46-HdY
+Content-Type: application/json
+
+{
+  "content":"댓글입니다."
+}

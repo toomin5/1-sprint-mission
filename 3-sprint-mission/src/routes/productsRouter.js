@@ -28,7 +28,11 @@ productsRouter.delete(
   withAsync(deleteProduct)
 );
 productsRouter.get("/", withAsync(getProductList));
-productsRouter.post("/:id/comments", withAsync(createComment));
+productsRouter.post(
+  "/:id/comments",
+  verifyAccessToken,
+  withAsync(createComment)
+);
 productsRouter.get("/:id/comments", withAsync(getCommentList));
 
 export default productsRouter;

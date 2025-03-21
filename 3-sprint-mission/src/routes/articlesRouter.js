@@ -28,7 +28,11 @@ articlesRouter.delete(
   verifyAricleAuth,
   withAsync(deleteArticle)
 );
-articlesRouter.post("/:id/comments", withAsync(createComment));
+articlesRouter.post(
+  "/:id/comments",
+  verifyAccessToken,
+  withAsync(createComment)
+);
 articlesRouter.get("/:id/comments", withAsync(getCommentList));
 
 export default articlesRouter;

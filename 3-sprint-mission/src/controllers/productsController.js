@@ -110,6 +110,7 @@ export async function getProductList(req, res) {
 export async function createComment(req, res) {
   const { id: productId } = create(req.params, IdParamsStruct);
   const { content } = create(req.body, CreateCommentBodyStruct);
+  const { userId } = req.user;
 
   const existingProduct = await prismaClient.product.findUnique({
     where: { id: productId },
@@ -119,7 +120,11 @@ export async function createComment(req, res) {
   }
 
   const comment = await prismaClient.comment.create({
-    data: { productId, content },
+    data: {
+      productId,
+      content,
+      userId,
+    },
   });
 
   return res.status(201).send(comment);

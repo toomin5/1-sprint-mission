@@ -33,3 +33,12 @@ Content-Type: application/json
   "price":30000,
   "tags":["전자제품", "노트북"]
 }
+
+###
+POST http://localhost:3000/products/11/comments
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0MjU0MTcwMSwiZXhwIjoxNzQyNTQ1MzAxfQ.fzHSalEB2izHlE1mRO08IjblInzn1V6yGxfPhwFA4XM
+Content-Type: application/json
+
+{
+  "content":"댓글입니다."
+}

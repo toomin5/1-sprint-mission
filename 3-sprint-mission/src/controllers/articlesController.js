@@ -87,6 +87,7 @@ export async function getArticleList(req, res) {
 export async function createComment(req, res) {
   const { id: articleId } = create(req.params, IdParamsStruct);
   const { content } = create(req.body, CreateCommentBodyStruct);
+  const { userId } = req.user;
 
   const existingArticle = await prismaClient.article.findUnique({
     where: { id: articleId },
@@ -99,6 +100,7 @@ export async function createComment(req, res) {
     data: {
       articleId,
       content,
+      userId,
     },
   });
 

@@ -1,7 +1,7 @@
 import { create } from "superstruct";
 import { prismaClient } from "../lib/prismaClient.js";
 import { UpdateCommentBodyStruct } from "../structs/commentsStruct.js";
-import NotFoundError from "../lib/errors/NotFoundError.js";
+
 export async function updateComment(req, res) {
   const { id } = create(req.params, IdParamsStruct);
   const { content } = create(req.body, UpdateCommentBodyStruct);
@@ -10,7 +10,9 @@ export async function updateComment(req, res) {
     where: { id },
   });
   if (!existingComment) {
-    throw new NotFoundError("comment", id);
+    const error = new Error("comment not found");
+    error.code = 404;
+    throw error;
   }
 
   const updatedComment = await prismaClient.comment.update({
@@ -28,7 +30,9 @@ export async function deleteComment(req, res) {
     where: { id },
   });
   if (!existingComment) {
-    throw new NotFoundError("comment", id);
+    const error = new Error("comment not found");
+    error.code = 404;
+    throw error;
   }
 
   await prismaClient.comment.delete({ where: { id } });

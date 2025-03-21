@@ -1,6 +1,6 @@
 import { create } from "superstruct";
 import { prismaClient } from "../lib/prismaClient.js";
-import NotFoundError from "../lib/errors/NotFoundError.js";
+
 import {
   CreateProductBodyStruct,
   UpdateProductBodyStruct,
@@ -10,20 +10,18 @@ import { CreateCommentBodyStruct } from "../structs/commentsStruct.js";
 export async function createProduct(req, res) {
   const { userId } = req.user;
   const { name, description, price, tags, images } = req.body;
-  try {
-    if (!userId) {
-      return res.status(401).json({ message: "unauthorized." });
-    }
 
-    const newProduct = await prismaClient.product.create({
-      data: { name, description, price, tags, images, userId },
-    });
-
-    res.status(201).json(newProduct);
-  } catch (error) {
-    console.error("error:", error);
-    res.status(500).json({ message: "internal server error" });
+  if (!userId) {
+    const error = new Error("userId not found");
+    error.code = 400;
+    throw error;
   }
+
+  const newProduct = await prismaClient.product.create({
+    data: { name, description, price, tags, images, userId },
+  });
+
+  res.status(201).json(newProduct);
 }
 
 export async function getProduct(req, res) {
@@ -31,7 +29,9 @@ export async function getProduct(req, res) {
 
   const product = await prismaClient.product.findUnique({ where: { id } });
   if (!product) {
-    throw new NotFoundError("product", id);
+    const error = new Error("product not found");
+    error.code = 404;
+    throw error;
   }
 
   return res.send(product);
@@ -48,7 +48,9 @@ export async function updateProduct(req, res) {
     where: { id },
   });
   if (!existingProduct) {
-    throw new NotFoundError("product", id);
+    const error = new Error("product not found");
+    error.code = 404;
+    throw error;
   }
 
   const updatedProduct = await prismaClient.product.update({
@@ -66,7 +68,9 @@ export async function deleteProduct(req, res) {
   });
 
   if (!existingProduct) {
-    throw new NotFoundError("product", id);
+    const error = new Error("product not found");
+    error.code = 404;
+    throw error;
   }
 
   await prismaClient.product.delete({ where: { id } });
@@ -111,7 +115,9 @@ export async function createComment(req, res) {
     where: { id: productId },
   });
   if (!existingProduct) {
-    throw new NotFoundError("product", productId);
+    const error = new Error("product not found");
+    error.code = 404;
+    throw error;
   }
 
   const comment = await prismaClient.comment.create({
@@ -133,7 +139,9 @@ export async function getCommentList(req, res) {
     where: { id: productId },
   });
   if (!existingProduct) {
-    throw new NotFoundError("product", productId);
+    const error = new Error("product not found");
+    error.code = 404;
+    throw error;
   }
 
   const commentsWithCursorComment = await prismaClient.comment.findMany({

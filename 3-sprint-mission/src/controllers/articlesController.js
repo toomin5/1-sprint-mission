@@ -1,6 +1,5 @@
 import { create } from "superstruct";
 import { prismaClient } from "../lib/prismaClient.js";
-import NotFoundError from "../lib/errors/NotFoundError.js";
 import {
   CreateArticleBodyStruct,
   UpdateArticleBodyStruct,
@@ -22,7 +21,9 @@ export async function getArticle(req, res) {
 
   const article = await prismaClient.article.findUnique({ where: { id } });
   if (!article) {
-    throw new NotFoundError("article", id);
+    const error = new Error("article not found");
+    error.code = 404;
+    throw error;
   }
 
   return res.send(article);
@@ -34,7 +35,9 @@ export async function updateArticle(req, res) {
 
   const article = await prismaClient.article.update({ where: { id }, data });
   if (!article) {
-    throw new NotFoundError("article", articleId);
+    const error = new Error("article not found");
+    error.code = 404;
+    throw error;
   }
 
   return res.send(article);
@@ -47,7 +50,7 @@ export async function deleteArticle(req, res) {
     where: { id },
   });
   if (!existingArticle) {
-    throw new NotFoundError("article", id);
+    throw error;
   }
 
   await prismaClient.article.delete({ where: { id } });
@@ -85,7 +88,9 @@ export async function createComment(req, res) {
     where: { id: articleId },
   });
   if (!existingArticle) {
-    throw new NotFoundError("article", articleId);
+    const error = new Error("article not found");
+    error.code = 404;
+    throw error;
   }
 
   const comment = await prismaClient.comment.create({
@@ -107,7 +112,9 @@ export async function getCommentList(req, res) {
     where: { id: articleId },
   });
   if (!article) {
-    throw new NotFoundError("article", articleId);
+    const error = new Error("article not found");
+    error.code = 404;
+    throw error;
   }
 
   const commentsWithCursor = await prismaClient.comment.findMany({

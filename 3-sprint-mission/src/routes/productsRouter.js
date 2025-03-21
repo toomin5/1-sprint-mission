@@ -21,7 +21,12 @@ productsRouter.patch(
   verifyProductAuth,
   withAsync(updateProduct)
 );
-productsRouter.delete("/:id", verifyProductAuth, withAsync(deleteProduct));
+productsRouter.delete(
+  "/:id",
+  verifyAccessToken,
+  verifyProductAuth,
+  withAsync(deleteProduct)
+);
 productsRouter.get("/", withAsync(getProductList));
 productsRouter.post("/:id/comments", withAsync(createComment));
 productsRouter.get("/:id/comments", withAsync(getCommentList));

@@ -3,11 +3,13 @@ GET http://localhost:3000/articles
 
 ###
 POST http://localhost:3000/articles
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0MjUzODU4NiwiZXhwIjoxNzQyNTQyMTg2fQ.mPn6iHp6QI-dkrx09TKmyp-DN_ZXBo17khL-2eB_z30
 Content-Type: application/json
 
 {
   "title":"API로 생성된 게시글",
-  "content":"추가로 생성된 게시글 입니다."
+  "content":"추가로 생성된 게시글 입니다.",
+  "image":""
 }
 
 ###

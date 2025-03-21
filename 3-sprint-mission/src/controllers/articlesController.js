@@ -15,6 +15,8 @@ import {
 export async function createArticle(req, res) {
   const data = create(req.body, CreateArticleBodyStruct);
 
+  data.userId = req.user.userId;
+
   const article = await prismaClient.article.create({ data });
 
   return res.status(201).send(article);

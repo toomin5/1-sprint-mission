@@ -20,7 +20,6 @@ export async function verifyProductAuth(req, res, next) {
   const { id: productId } = req.params;
   const productIdInt = parseInt(productId, 10);
   try {
-    //유저아이디
     const product = await prismaClient.product.findUnique({
       where: { id: productIdInt },
     });
@@ -32,6 +31,27 @@ export async function verifyProductAuth(req, res, next) {
     }
     // product모델의 userid값과 요청한 유저 아이디값
     if (product.userId !== req.user.userId) {
+      return res.status(403).json({ message: "forbbiden" });
+    }
+    return next();
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function verifyAricleAuth(req, res, next) {
+  const { id: articleId } = req.params;
+  const articleIdInt = parseInt(articleId, 10);
+  try {
+    const article = await prismaClient.article.findUnique({
+      where: { id: articleIdInt },
+    });
+    if (!article) {
+      const error = new Error("product not found");
+      error.code = 404;
+      throw error;
+    }
+    if (article.userId !== req.user.userId) {
       return res.status(403).json({ message: "forbbiden" });
     }
     return next();

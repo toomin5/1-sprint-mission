@@ -1,5 +1,5 @@
 ### 회원가입
-POST http://localhost:3000/users 
+POST http://localhost:3000/users
 Content-Type: application/json
 
 {
@@ -7,3 +7,16 @@ Content-Type: application/json
   "nickname":"닉네임1234",
   "password":"12341234"
 }
+
+### 로그인
+POST http://localhost:3000/users/login
+Content-Type: application/json
+
+{
+  "email":"twomean99@gmail.com",
+  "password":"12341234"
+}
+
+### 토큰재발급
+POST http://localhost:3000/users/token/refresh
+Cookie: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0MjUyMzMyNiwiZXhwIjoxNzQzNzMyOTI2fQ.Omg04FUx355ehCKag9HkgS71xRJIutTIpP9xV0MkQV0

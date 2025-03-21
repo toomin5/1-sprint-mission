@@ -4,11 +4,21 @@ import {
   updateComment,
   deleteComment,
 } from "../controllers/commentsController.js";
-import {} from "../middleware/auth.js";
+import { verifyAccessToken, verifyCommentAuth } from "../middleware/auth.js";
 
 const commentsRouter = express.Router();
 
-commentsRouter.patch("/:id", withAsync(updateComment));
-commentsRouter.delete("/:id", withAsync(deleteComment));
+commentsRouter.patch(
+  "/:id",
+  verifyAccessToken,
+  verifyCommentAuth,
+  withAsync(updateComment)
+);
+commentsRouter.delete(
+  "/:id",
+  verifyAccessToken,
+  verifyCommentAuth,
+  withAsync(deleteComment)
+);
 
 export default commentsRouter;

@@ -59,3 +59,25 @@ export async function verifyAricleAuth(req, res, next) {
     return next(error);
   }
 }
+
+export async function verifyCommentAuth(req, res, next) {
+  const { id: commentId } = req.params;
+  console.log("comment:", commentId);
+  const commentIdInt = parseInt(commentId, 10);
+  try {
+    const comment = await prismaClient.comment.findUnique({
+      where: { id: commentIdInt },
+    });
+    if (!comment) {
+      const error = new Error("comment not found");
+      error.code = 404;
+      throw error;
+    }
+    if (comment.userId !== req.user.userId) {
+      return res.status(403).json({ message: "forbidden" });
+    }
+    return next();
+  } catch (error) {
+    return next(error);
+  }
+}

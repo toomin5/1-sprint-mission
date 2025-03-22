@@ -92,3 +92,17 @@ export async function refreshToken(req, res) {
   const accessToken = createToken(user);
   return res.status(201).json({ accessToken });
 }
+
+export async function userInfo(req, res) {
+  const { userId } = req.user;
+  //찾은 Id값과 일치하는 user정보가져오기
+  const user = await prismaClient.user.findUnique({
+    where: { id: userId },
+    select: {
+      nickname: true,
+      email: true,
+      createdAt: true,
+    },
+  });
+  return res.status(201).json({ user });
+}

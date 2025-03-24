@@ -8,7 +8,8 @@ import {
   getProductList,
   createComment,
   getCommentList,
-  patchProductsLike,
+  postProductsLike,
+  deleteProductsLike,
 } from "../controllers/productsController.js";
 import { verifyAccessToken, verifyProductAuth } from "../middleware/auth.js";
 
@@ -22,10 +23,15 @@ productsRouter.patch(
   verifyProductAuth,
   withAsync(updateProduct)
 );
-productsRouter.patch(
-  "/likes/:id",
+productsRouter.post(
+  "/likes/:productId",
   verifyAccessToken,
-  withAsync(patchProductsLike)
+  withAsync(postProductsLike)
+);
+productsRouter.delete(
+  "/likes/:productId",
+  verifyAccessToken,
+  withAsync(deleteProductsLike)
 );
 productsRouter.delete(
   "/:id",

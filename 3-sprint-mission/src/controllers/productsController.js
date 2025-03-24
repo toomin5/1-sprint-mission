@@ -156,18 +156,112 @@ export async function getCommentList(req, res) {
   });
 }
 
-export async function patchProductsLike(req, res) {
+export async function postProductsLike(req, res) {
   const { userId } = req.user;
-  const { productId } = req.query;
+  const { productId } = req.params;
+  const parseIntProductId = parseInt(productId, 10);
 
-  if (!productId) {
+  if (!parseIntProductId) {
     const error = new Error("product not found");
     error.code = 404;
     throw error;
   }
 
   const product = await prismaClient.product.findUnique({
-    where: { id: productId },
+    where: { id: parseIntProductId },
   });
-  return res.status(201).json({ product });
+
+  if (!product) {
+    const error = new Error("product not found");
+    error.code = 404;
+    throw error;
+  }
+
+  const user = await prismaClient.productLikes.findFirst({
+    where: { userId: userId, productId: parseIntProductId },
+  });
+
+  if (user) {
+    const error = new Error("you have already liked");
+    error.code = 400;
+    throw error;
+  }
+
+  await prismaClient.productLikes.create({
+    data: {
+      userId: userId,
+      productId: parseIntProductId,
+    },
+  });
+  const updatedProduct = await prismaClient.product.update({
+    where: { id: parseIntProductId },
+    data: {
+      likeCount: { increment: 1 },
+    },
+    select: {
+      id: true,
+      name: true,
+      likeCount: true,
+    },
+  });
+  return res.status(201).json({ updatedProduct });
+}
+
+// 유저정보를 가져온다 -> 상품id가져오기 -> 좋아요 버튼 -> 증가 -> productlikes에 유저,상품정보 업데이트
+// 상품좋아요를 누른 유저들중에 로그인한 유저가 있다면 에러
+
+export async function deleteProductsLike(req, res) {
+  const { userId } = req.user;
+  const { productId } = req.params;
+
+  const parseIntProductId = parseInt(productId, 10);
+
+  if (!parseIntProductId) {
+    const error = new Error("product not found");
+    error.code = 404;
+    throw error;
+  }
+
+  const product = await prismaClient.product.findUnique({
+    where: { id: parseIntProductId },
+  });
+
+  if (!product) {
+    const error = new Error("product not found");
+    error.code = 404;
+    throw error;
+  }
+
+  const user = await prismaClient.productLikes.findFirst({
+    where: { userId: userId, productId: parseIntProductId },
+  });
+
+  if (!user) {
+    const error = new Error("you haven't like");
+    error.code = 400;
+    throw error;
+  }
+
+  const userLike = await prismaClient.productLikes.findFirst({
+    where: { userId, productId: parseIntProductId },
+  });
+
+  // userLike가 true -> 데이터 삭제 (좋아요 기록)
+  if (userLike) {
+    await prismaClient.productLikes.delete({
+      where: { id: userLike.id },
+    });
+  }
+  const updatedProduct = await prismaClient.product.update({
+    where: { id: parseIntProductId },
+    data: {
+      likeCount: { decrement: 1 },
+    },
+    select: {
+      id: true,
+      name: true,
+      likeCount: true,
+    },
+  });
+  return res.status(200).json({ updatedProduct });
 }

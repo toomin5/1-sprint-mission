@@ -18,6 +18,7 @@ model Article {
   title          String
   content        String
   image          String?
+  likeCount      Int?           @default(10)
   ArticleComment Comment[]
   userId         Int?
   user           User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -38,6 +39,7 @@ model Product {
   user           User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
+  likeCount      Int?           @default(0)
   ProductLikes   ProductLikes[]
 }
 

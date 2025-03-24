@@ -13,8 +13,8 @@ POST http://localhost:3000/users/login
 Content-Type: application/json
 
 {
-  "email":"updated@gmail.com",
-  "password":"12341234"
+  "email":"0001@gmail.com",
+  "password":"56785678"
 }
 
 ### 토큰재발급
@@ -23,24 +23,28 @@ Cookie: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdC
 
 ### 유저정보조회(자신) 
 GET http://localhost:3000/users/info
-authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0Mjc3NjU1NSwiZXhwIjoxNzQyNzgwMTU1fQ.upG90ovAysN0GK_vTWG8IQlPowRzEcSVxnjdZcHVFcw
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0Mjc5MDM4NiwiZXhwIjoxNzQzOTk5OTg2fQ.I7O2nMuzC6a7B1lIBKUp2E9VWnT5pmSnk2x5YAvgpMA
 
 ### 유저정보수정
 PATCH http://localhost:3000/users/patch
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0Mjc3ODU2OCwiZXhwIjoxNzQyNzgyMTY4fQ.V5FRupXbQ6HZrDhFhD6HYFJcS6R6_kpbDjiJeVR0ZNw
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0Mjc5MDM4NiwiZXhwIjoxNzQzOTk5OTg2fQ.I7O2nMuzC6a7B1lIBKUp2E9VWnT5pmSnk2x5YAvgpMA
 Content-Type: application/json
 
 {
   "nickname":"수정된유저",
-  "email":"updated@gmail.com"
+  "email":"0001@gmail.com"
 }
 
 ### 유저비밀번호수정
 PATCH http://localhost:3000/users/pwdPatch
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0Mjc4Mzg1OCwiZXhwIjoxNzQyNzg3NDU4fQ.ONJ0cgTfcuWnDR4SQmzLUJLCqtRLejPwvvjPAWPQ338
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0Mjc5MDM4NiwiZXhwIjoxNzQzOTk5OTg2fQ.I7O2nMuzC6a7B1lIBKUp2E9VWnT5pmSnk2x5YAvgpMA
 Content-Type: application/json
 
 {
   "password":"12341234",
   "newPassword":"56785678"
 }
+
+### 유저상품리스트조회
+GET http://localhost:3000/users/products
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0Mjc5MDM4NiwiZXhwIjoxNzQzOTk5OTg2fQ.I7O2nMuzC6a7B1lIBKUp2E9VWnT5pmSnk2x5YAvgpMA

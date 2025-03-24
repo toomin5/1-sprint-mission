@@ -152,4 +152,24 @@ export async function userPwdPatch(req, res) {
     .json({ filteredUserData, message: "Password updated" });
 }
 
-export async function userProductList(req, res) {}
+export async function userProductList(req, res) {
+  const { userId } = req.user;
+
+  const products = await prismaClient.product.findMany({
+    where: { userId },
+    select: {
+      name: true,
+      description: true,
+      price: true,
+      tags: true,
+    },
+  });
+
+  if (!products) {
+    const error = new Error("user not found");
+    error.code = 400;
+    throw error;
+  }
+
+  return res.status(200).json({ products });
+}

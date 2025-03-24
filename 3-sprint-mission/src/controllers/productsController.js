@@ -79,10 +79,7 @@ export async function deleteProduct(req, res) {
 }
 
 export async function getProductList(req, res) {
-  const { page, pageSize, orderBy, keyword } = create(
-    req.query,
-    GetProductListParamsStruct
-  );
+  const { page = 1, pageSize = 10, orderBy, keyword } = req.query;
 
   const where = keyword
     ? {
@@ -157,4 +154,20 @@ export async function getCommentList(req, res) {
     list: comments,
     nextCursor,
   });
+}
+
+export async function patchProductsLike(req, res) {
+  const { userId } = req.user;
+  const { productId } = req.query;
+
+  if (!productId) {
+    const error = new Error("product not found");
+    error.code = 404;
+    throw error;
+  }
+
+  const product = await prismaClient.product.findUnique({
+    where: { id: productId },
+  });
+  return res.status(201).json({ product });
 }

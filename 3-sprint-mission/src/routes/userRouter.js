@@ -4,10 +4,10 @@ import {
   createUser,
   getUser,
   refreshToken,
-  userInfo,
-  userPatch,
-  userProductList,
-  userPwdPatch,
+  getUserInfo,
+  patchUser,
+  getUserProducts,
+  patchUserPassword,
 } from "../controllers/userController.js";
 import { verifyAccessToken, verifyRefreshToken } from "../middleware/auth.js";
 
@@ -16,9 +16,9 @@ const userRouter = express.Router();
 userRouter.post("/", withAsync(createUser));
 userRouter.post("/login", withAsync(getUser));
 userRouter.post("/token/refresh", verifyRefreshToken, withAsync(refreshToken));
-userRouter.get("/info", verifyAccessToken, withAsync(userInfo));
-userRouter.get("/products", verifyAccessToken, withAsync(userProductList));
-userRouter.patch("/patch", verifyAccessToken, withAsync(userPatch));
-userRouter.patch("/pwdPatch", verifyAccessToken, withAsync(userPwdPatch));
+userRouter.get("/info", verifyAccessToken, withAsync(getUserInfo));
+userRouter.get("/products", verifyAccessToken, withAsync(getUserProducts));
+userRouter.patch("/patch", verifyAccessToken, withAsync(patchUser));
+userRouter.patch("/pwdPatch", verifyAccessToken, withAsync(patchUserPassword));
 
 export default userRouter;

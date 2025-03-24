@@ -94,7 +94,7 @@ export async function refreshToken(req, res) {
   return res.status(201).json({ accessToken });
 }
 
-export async function userInfo(req, res) {
+export async function getUserInfo(req, res) {
   const { userId } = req.user;
   //찾은 Id값과 일치하는 user정보가져오기
   const user = await prismaClient.user.findUnique({
@@ -108,7 +108,7 @@ export async function userInfo(req, res) {
   return res.status(201).json({ user });
 }
 
-export async function userPatch(req, res) {
+export async function patchUser(req, res) {
   const { userId } = req.user;
   const user = await prismaClient.user.update({
     where: { id: userId },
@@ -118,7 +118,7 @@ export async function userPatch(req, res) {
   return res.status(200).json({ filteredUserData });
 }
 
-export async function userPwdPatch(req, res) {
+export async function patchUserPassword(req, res) {
   const { userId } = req.user;
   const { password, newPassword } = req.body;
 
@@ -152,7 +152,7 @@ export async function userPwdPatch(req, res) {
     .json({ filteredUserData, message: "Password updated" });
 }
 
-export async function userProductList(req, res) {
+export async function getUserProducts(req, res) {
   const { userId } = req.user;
 
   const products = await prismaClient.product.findMany({

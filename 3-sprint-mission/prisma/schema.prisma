@@ -14,19 +14,20 @@ datasource db {
 }
 
 model Article {
-  id             Int       @id @default(autoincrement())
+  id             Int            @id @default(autoincrement())
   title          String
   content        String
   image          String?
   ArticleComment Comment[]
   userId         Int?
-  user           User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  user           User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  ArticleLikes   ArticleLikes[]
 }
 
 model Product {
-  id             Int       @id @default(autoincrement())
+  id             Int            @id @default(autoincrement())
   name           String
   description    String
   price          Int
@@ -34,9 +35,10 @@ model Product {
   images         String[]
   ProductComment Comment[]
   userId         Int?
-  user           User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  user           User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  ProductLikes   ProductLikes[]
 }
 
 model Comment {
@@ -53,15 +55,35 @@ model Comment {
 }
 
 model User {
-  id           Int       @id @default(autoincrement())
-  email        String    @unique
+  id           Int            @id @default(autoincrement())
+  email        String         @unique
   nickname     String
   image        String?
   password     String
   refreshToken String?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
   Product      Product[]
   Article      Article[]
   Comment      Comment[]
+  ProductLikes ProductLikes[]
+  ArticleLikes ArticleLikes[]
+}
+
+model ProductLikes {
+  id        Int      @id @default(autoincrement())
+  productId Int?
+  product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model ArticleLikes {
+  id        Int      @id @default(autoincrement())
+  articleId Int?
+  article   Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
 }

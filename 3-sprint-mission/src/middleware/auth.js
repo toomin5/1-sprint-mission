@@ -3,6 +3,7 @@ import { expressjwt } from "express-jwt";
 import { prismaClient } from "../lib/prismaClient.js";
 
 // express-jwt 내부에서 next호출
+// bearer에 있는 jwt가 검증이 되면 requestProperty에 저장
 export const verifyRefreshToken = expressjwt({
   secret: JWT_SECRET,
   algorithms: ["HS256"],
@@ -64,7 +65,6 @@ export async function verifyAricleAuth(req, res, next) {
 
 export async function verifyCommentAuth(req, res, next) {
   const { id: commentId } = req.params;
-  console.log("comment:", commentId);
   const commentIdInt = parseInt(commentId, 10);
   try {
     const comment = await prismaClient.comment.findUnique({

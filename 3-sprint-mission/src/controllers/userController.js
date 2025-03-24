@@ -10,6 +10,7 @@ function hashingPassword(password) {
 }
 
 // password,token filter
+// 비구조화할당 , rest operator
 function filterSensitiveUserData(user) {
   const { password, refreshToken, ...rest } = user;
   return rest;
@@ -40,7 +41,7 @@ export async function createUser(req, res) {
     },
   });
 
-  res.status(201).json(newUser);
+  res.status(201).json({ newUser });
 }
 
 // login
@@ -105,4 +106,14 @@ export async function userInfo(req, res) {
     },
   });
   return res.status(201).json({ user });
+}
+
+export async function userPatch(req, res) {
+  const { userId } = req.user;
+  const user = await prismaClient.user.update({
+    where: { id: userId },
+    data: req.body,
+  });
+  const filteredUserData = filterSensitiveUserData(user);
+  return res.status(200).json({ filteredUserData });
 }

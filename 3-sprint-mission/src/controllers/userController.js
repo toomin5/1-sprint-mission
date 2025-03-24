@@ -117,3 +117,39 @@ export async function userPatch(req, res) {
   const filteredUserData = filterSensitiveUserData(user);
   return res.status(200).json({ filteredUserData });
 }
+
+export async function userPwdPatch(req, res) {
+  const { userId } = req.user;
+  const { password, newPassword } = req.body;
+
+  const user = await prismaClient.user.findUnique({
+    where: { id: userId },
+  });
+  if (!user) {
+    const error = new Error("user not found");
+    error.code = 404;
+    throw error;
+  }
+
+  const validPassword = await bcrypt.compare(password, user.password);
+  if (!validPassword) {
+    const error = new Error("invalid login!");
+    error.code = 401;
+    throw error;
+  }
+
+  const hashedPassword = await hashingPassword(newPassword);
+  const newUser = await prismaClient.user.update({
+    where: { id: userId },
+    data: {
+      password: hashedPassword,
+    },
+  });
+
+  const filteredUserData = filterSensitiveUserData(newUser);
+  return res
+    .status(200)
+    .json({ filteredUserData, message: "Password updated" });
+}
+
+export async function userProductList(req, res) {}

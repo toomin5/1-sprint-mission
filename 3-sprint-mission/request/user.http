@@ -13,7 +13,7 @@ POST http://localhost:3000/users/login
 Content-Type: application/json
 
 {
-  "email":"twomean99@gmail.com",
+  "email":"updated@gmail.com",
   "password":"12341234"
 }
 
@@ -33,4 +33,14 @@ Content-Type: application/json
 {
   "nickname":"수정된유저",
   "email":"updated@gmail.com"
+}
+
+### 유저비밀번호수정
+PATCH http://localhost:3000/users/pwdPatch
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0Mjc4Mzg1OCwiZXhwIjoxNzQyNzg3NDU4fQ.ONJ0cgTfcuWnDR4SQmzLUJLCqtRLejPwvvjPAWPQ338
+Content-Type: application/json
+
+{
+  "password":"12341234",
+  "newPassword":"56785678"
 }

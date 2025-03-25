@@ -173,3 +173,19 @@ export async function getUserProducts(req, res) {
 
   return res.status(200).json({ products });
 }
+
+export async function getUserLikeProducts(req, res) {
+  // 로그인한 유저 정보 추출:
+  const { userId } = req.user;
+  // 상품목록조회
+  const products = await prismaClient.product.findMany({
+    where: { ProductLikes: { some: { userId } } },
+    select: {
+      id: true,
+      name: true,
+      price: true,
+      likeCount: true,
+    },
+  });
+  return res.status(201).json({ products });
+}

@@ -8,6 +8,7 @@ import {
   patchUser,
   getUserProducts,
   patchUserPassword,
+  getUserLikeProducts,
 } from "../controllers/userController.js";
 import { verifyAccessToken, verifyRefreshToken } from "../middleware/auth.js";
 
@@ -18,6 +19,11 @@ userRouter.post("/login", withAsync(getUser));
 userRouter.post("/token/refresh", verifyRefreshToken, withAsync(refreshToken));
 userRouter.get("/info", verifyAccessToken, withAsync(getUserInfo));
 userRouter.get("/products", verifyAccessToken, withAsync(getUserProducts));
+userRouter.get(
+  "/products/likes",
+  verifyAccessToken,
+  withAsync(getUserLikeProducts)
+);
 userRouter.patch("/patch", verifyAccessToken, withAsync(patchUser));
 userRouter.patch("/pwdPatch", verifyAccessToken, withAsync(patchUserPassword));
 

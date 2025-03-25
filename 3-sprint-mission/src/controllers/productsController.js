@@ -169,6 +169,9 @@ export async function postProductsLike(req, res) {
 
   const product = await prismaClient.product.findUnique({
     where: { id: parseIntProductId },
+    select: {
+      likeCount: true,
+    },
   });
 
   if (!product) {
@@ -177,22 +180,17 @@ export async function postProductsLike(req, res) {
     throw error;
   }
 
-  const user = await prismaClient.productLikes.findFirst({
-    where: { userId: userId, productId: parseIntProductId },
-  });
-
-  if (user) {
-    const error = new Error("you have already liked");
-    error.code = 400;
+  try {
+    await prismaClient.productLikes.create({
+      data: { userId, productId: parseIntProductId },
+    });
+  } catch (error) {
+    if (error.code === "P2002") {
+      throw Object.assign(new Error("you have already liked"), { code: 400 });
+    }
     throw error;
   }
 
-  await prismaClient.productLikes.create({
-    data: {
-      userId: userId,
-      productId: parseIntProductId,
-    },
-  });
   const updatedProduct = await prismaClient.product.update({
     where: { id: parseIntProductId },
     data: {
@@ -204,7 +202,8 @@ export async function postProductsLike(req, res) {
       likeCount: true,
     },
   });
-  return res.status(201).json({ updatedProduct });
+  const isLiked = updatedProduct.likeCount > 0 ? true : false;
+  return res.status(201).json({ updatedProduct, isLiked });
 }
 
 // 유저정보를 가져온다 -> 상품id가져오기 -> 좋아요 버튼 -> 증가 -> productlikes에 유저,상품정보 업데이트
@@ -221,37 +220,16 @@ export async function deleteProductsLike(req, res) {
     error.code = 404;
     throw error;
   }
-
-  const product = await prismaClient.product.findUnique({
-    where: { id: parseIntProductId },
-  });
-
-  if (!product) {
-    const error = new Error("product not found");
-    error.code = 404;
-    throw error;
-  }
-
-  const user = await prismaClient.productLikes.findFirst({
-    where: { userId: userId, productId: parseIntProductId },
-  });
-
-  if (!user) {
-    const error = new Error("you haven't like");
+  if (productLikes.likeCount === 0) {
+    const error = new Error("no like");
     error.code = 400;
     throw error;
   }
 
-  const userLike = await prismaClient.productLikes.findFirst({
+  const userlike = await prismaClient.productLikes.deleteMany({
     where: { userId, productId: parseIntProductId },
   });
 
-  // userLike가 true -> 데이터 삭제 (좋아요 기록)
-  if (userLike) {
-    await prismaClient.productLikes.delete({
-      where: { id: userLike.id },
-    });
-  }
   const updatedProduct = await prismaClient.product.update({
     where: { id: parseIntProductId },
     data: {
@@ -263,5 +241,6 @@ export async function deleteProductsLike(req, res) {
       likeCount: true,
     },
   });
-  return res.status(200).json({ updatedProduct });
+  const isLiked = updatedProduct.likeCount > 0 ? true : false;
+  return res.status(200).json({ updatedProduct, isLiked });
 }

@@ -35,3 +35,11 @@ Content-Type: application/json
 {
   "content":"댓글입니다."
 }
+
+###
+POST http://localhost:3000/articles/likes/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0Mjg2NzI4MCwiZXhwIjoxNzQyODcwODgwfQ.Sd3n24oixg6bCmiGa9r87SJ3IfGDZttOFeLBpme0Jxw
+
+###
+DELETE http://localhost:3000/articles/likes/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0Mjg2NzI4MCwiZXhwIjoxNzQyODcwODgwfQ.Sd3n24oixg6bCmiGa9r87SJ3IfGDZttOFeLBpme0Jxw

@@ -132,3 +132,108 @@ export async function getCommentList(req, res) {
     nextCursor,
   });
 }
+
+export async function postArticlesLike(req, res) {
+  const { userId } = req.user;
+  const { articleId } = req.params;
+  const parseIntArticleId = parseInt(articleId, 10);
+
+  if (!parseIntArticleId) {
+    const error = new Error("article not found");
+    error.code = 404;
+    throw error;
+  }
+
+  const article = await prismaClient.article.findUnique({
+    where: { id: parseIntArticleId },
+    select: {
+      likeCount: true,
+    },
+  });
+
+  if (!article) {
+    const error = new Error("article not found");
+    error.code = 404;
+    throw error;
+  }
+
+  try {
+    await prismaClient.articleLikes.create({
+      data: { userId, articleId: parseIntArticleId },
+    });
+  } catch (error) {
+    if (error.code === "P2002") {
+      throw Object.assign(new Error("you have already liked"), { code: 400 });
+    }
+    throw error;
+  }
+
+  const updatedArticle = await prismaClient.article.update({
+    where: { id: parseIntArticleId },
+    data: {
+      likeCount: { increment: 1 },
+    },
+    select: {
+      id: true,
+      title: true,
+      likeCount: true,
+    },
+  });
+  const isLiked = updatedArticle.likeCount > 0 ? true : false;
+  return res.status(201).json({ updatedArticle, isLiked });
+}
+
+export async function deleteArticlesLike(req, res) {
+  const { userId } = req.user;
+  const { articleId } = req.params;
+
+  const parseIntArticleId = parseInt(articleId, 10);
+
+  if (!parseIntArticleId) {
+    const error = new Error("article not found");
+    error.code = 404;
+    throw error;
+  }
+
+  const article = await prismaClient.article.findUnique({
+    where: { id: parseIntArticleId },
+    select: {
+      likeCount: true,
+    },
+  });
+
+  if (!article) {
+    const error = new Error("article not found");
+    error.code = 404;
+    throw error;
+  }
+  if (article.likeCount === 0) {
+    const error = new Error("no likes");
+    error.code = 400;
+    throw error;
+  }
+
+  const userLike = await prismaClient.articleLikes.deleteMany({
+    where: { userId, articleId: parseIntArticleId },
+  });
+
+  if (userLike.length === 0) {
+    const error = new Error("you haven't like");
+    error.code = 400;
+    throw error;
+  }
+
+  const updatedArticle = await prismaClient.article.update({
+    where: { id: parseIntArticleId },
+    data: {
+      likeCount: { decrement: 1 },
+    },
+    select: {
+      id: true,
+      title: true,
+      likeCount: true,
+    },
+  });
+  const isLiked = updatedArticle.likeCount > 0 ? true : false;
+  return res.status(200).json({ updatedArticle, isLiked });
+}

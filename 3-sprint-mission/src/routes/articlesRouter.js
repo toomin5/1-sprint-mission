@@ -8,12 +8,19 @@ import {
   deleteArticle,
   createComment,
   getCommentList,
+  postArticlesLike,
+  deleteArticlesLike,
 } from "../controllers/articlesController.js";
 import { verifyAccessToken, verifyAricleAuth } from "../middleware/auth.js";
 
 const articlesRouter = express.Router();
 
 articlesRouter.post("/", verifyAccessToken, withAsync(createArticle));
+articlesRouter.post(
+  "/likes/:articleId",
+  verifyAccessToken,
+  withAsync(postArticlesLike)
+);
 articlesRouter.get("/", withAsync(getArticleList));
 articlesRouter.get("/:id", withAsync(getArticle));
 articlesRouter.patch(
@@ -27,6 +34,11 @@ articlesRouter.delete(
   verifyAccessToken,
   verifyAricleAuth,
   withAsync(deleteArticle)
+);
+articlesRouter.delete(
+  "/likes/:articleId",
+  verifyAccessToken,
+  withAsync(deleteArticlesLike)
 );
 articlesRouter.post(
   "/:id/comments",

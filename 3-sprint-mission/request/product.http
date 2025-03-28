@@ -44,8 +44,8 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:3000/products/likes/12
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0MjgyMDI0MSwiZXhwIjoxNzQyODIzODQxfQ.BpJGBPvjY66CTUl-7GobXsL_76RYCs1BUSknXss7PEw
+POST http://localhost:3000/products/likes/14
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0Mjg2ODY5MSwiZXhwIjoxNzQyODcyMjkxfQ.5ty34bzQWA-7TV4l0IJmb9une54kiqNGO0Nsg7FpIDE
 
 ###
 DELETE http://localhost:3000/products/likes/12

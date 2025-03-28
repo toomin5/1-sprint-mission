@@ -51,4 +51,4 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhd
 
 ###
 GET http://localhost:3000/users/products/likes
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0Mjg2ODY5MSwiZXhwIjoxNzQyODcyMjkxfQ.5ty34bzQWA-7TV4l0IJmb9une54kiqNGO0Nsg7FpIDE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc0Mjg2ODY5MSwiZXhwIjoxNzQyODcyMjkxfQ.5ty34bzQWA-7TV4l0IJmb9une54kiqNGO0Nsg7FpIDE햐

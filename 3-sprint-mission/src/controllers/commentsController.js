@@ -1,41 +1,20 @@
 import { create } from "superstruct";
 import { prismaClient } from "../lib/prismaClient.js";
 import { UpdateCommentBodyStruct } from "../structs/commentsStruct.js";
+import commentService from "../services/commentService.js";
 
 export async function updateComment(req, res) {
   const { id } = create(req.params, IdParamsStruct);
   const { content } = create(req.body, UpdateCommentBodyStruct);
 
-  const existingComment = await prismaClient.comment.findUnique({
-    where: { id },
-  });
-  if (!existingComment) {
-    const error = new Error("comment not found");
-    error.code = 404;
-    throw error;
-  }
-
-  const updatedComment = await prismaClient.comment.update({
-    where: { id },
-    data: { content },
-  });
-
-  return res.send(updatedComment);
+  const updateComment = await commentService.updateComment(id, content);
+  return res.status(201).send(updateComment);
 }
 
 export async function deleteComment(req, res) {
-  const { id } = create(req.params, IdParamsStruct);
+  const { id } = req.params;
 
-  const existingComment = await prismaClient.comment.findUnique({
-    where: { id },
-  });
-  if (!existingComment) {
-    const error = new Error("comment not found");
-    error.code = 404;
-    throw error;
-  }
+  await commentService.deleteComment(id);
 
-  await prismaClient.comment.delete({ where: { id } });
-
-  return res.status(204).send();
+  return res.status(204).send({ message: "deleted" });
 }

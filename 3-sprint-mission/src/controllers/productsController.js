@@ -149,6 +149,7 @@ export async function getUserProducts(req, res) {
 export async function getUserLikeProducts(req, res) {
   const { userId } = req.user;
   console.log("userId:", userId);
+
   const products = await productService.getUserLikeProducts(userId);
   return res.status(200).send(products);
 }

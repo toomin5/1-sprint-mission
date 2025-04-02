@@ -10,11 +10,14 @@ import {
   getCommentList,
   postProductsLike,
   deleteProductsLike,
+  getUserProducts,
+  getUserLikeProducts,
 } from "../controllers/productsController.js";
 import { verifyAccessToken, verifyProductAuth } from "../middleware/auth.js";
 
 const productsRouter = express.Router();
 
+productsRouter.get("/likes", verifyAccessToken, withAsync(getUserLikeProducts));
 productsRouter.post("/", verifyAccessToken, withAsync(createProduct));
 productsRouter.get("/:id", withAsync(getProduct));
 productsRouter.patch(
@@ -46,5 +49,6 @@ productsRouter.post(
   withAsync(createComment)
 );
 productsRouter.get("/:id/comments", withAsync(getCommentList));
+productsRouter.get("/user/:userId", withAsync(getUserProducts));
 
 export default productsRouter;

@@ -1,6 +1,6 @@
 import articleService from "../services/articleService.js";
 
-async function createArticle(req, res) {
+export async function createArticle(req, res) {
   const { userId } = req.user;
   const articleData = req.body;
 
@@ -9,7 +9,7 @@ async function createArticle(req, res) {
   res.status(201).json(newArticle);
 }
 
-async function getArticle(req, res) {
+export async function getArticle(req, res) {
   const { id } = req.params;
 
   const article = await articleService.getArticle(parseInt(id, 10));
@@ -17,7 +17,7 @@ async function getArticle(req, res) {
   return res.send(article);
 }
 
-async function updateArticle(req, res) {
+export async function updateArticle(req, res) {
   const { id } = req.params;
   const updateData = req.body;
 
@@ -29,7 +29,7 @@ async function updateArticle(req, res) {
   return res.send(updatedArticle);
 }
 
-async function deleteArticle(req, res) {
+export async function deleteArticle(req, res) {
   const { id } = req.params;
   const { userId } = req.user;
 
@@ -38,7 +38,7 @@ async function deleteArticle(req, res) {
   return res.status(204).send();
 }
 
-async function getArticleList(req, res) {
+export async function getArticleList(req, res) {
   const { page = 1, pageSize = 10, orderBy, keyword } = req.query;
 
   const result = await articleService.getArticleList(
@@ -51,7 +51,7 @@ async function getArticleList(req, res) {
   return res.send(result);
 }
 
-async function createComment(req, res) {
+export async function createComment(req, res) {
   const { id: articleId } = req.params;
   const { content } = req.body;
   const { userId } = req.user;
@@ -65,7 +65,7 @@ async function createComment(req, res) {
   return res.status(201).send(comment);
 }
 
-async function getCommentList(req, res) {
+export async function getCommentList(req, res) {
   const { id: articleId } = req.params;
   const { limit = 10 } = req.query;
 
@@ -77,7 +77,7 @@ async function getCommentList(req, res) {
   return res.send({ list: comments });
 }
 
-async function postArticleLike(req, res) {
+export async function postArticleLike(req, res) {
   const { userId } = req.user;
   const { articleId } = req.params;
 
@@ -89,7 +89,7 @@ async function postArticleLike(req, res) {
   return res.status(201).json(updatedArticle);
 }
 
-async function deleteArticleLike(req, res) {
+export async function deleteArticleLike(req, res) {
   const { userId } = req.user;
   const { articleId } = req.params;
 
@@ -100,15 +100,3 @@ async function deleteArticleLike(req, res) {
 
   return res.status(200).json(updatedArticle);
 }
-
-export default {
-  createArticle,
-  getArticle,
-  updateArticle,
-  deleteArticle,
-  getArticleList,
-  createComment,
-  getCommentList,
-  postArticleLike,
-  deleteArticleLike,
-};

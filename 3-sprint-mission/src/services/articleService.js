@@ -1,25 +1,24 @@
 import articleRepository from "../repositories/articleRepository.js";
 
-export async function createArticleService(req) {
+async function createArticle(req) {
   const data = req.body;
   data.userId = req.user.userId;
   return articleRepository.createArticle(data);
 }
 
-export async function getArticleService(id) {
+async function getArticle(id) {
   return articleRepository.getArticle(id);
 }
 
-export async function updateArticleService(id, data) {
+async function updateArticle(id, data) {
   return articleRepository.updateArticle(id, data);
 }
 
-export async function deleteArticleService(id) {
+async function deleteArticle(id) {
   return articleRepository.deleteArticle(id);
 }
 
-export async function getArticleListService(req) {
-  const { page, pageSize, orderBy, keyword } = req.query;
+async function getArticleList(page, pageSize, orderBy, keyword) {
   return articleRepository.getArticleList(
     (page - 1) * pageSize,
     pageSize,
@@ -28,16 +27,11 @@ export async function getArticleListService(req) {
   );
 }
 
-export async function createCommentService(req) {
-  const { id: articleId } = req.params;
-  const { content } = req.body;
-  const userId = req.user.userId;
+async function createComment(articleId, userId, content) {
   return articleRepository.createComment(articleId, userId, content);
 }
 
-export async function getCommentListService(req) {
-  const { id: articleId } = req.params;
-  const { page, pageSize } = req.query;
+async function getCommentList(articleId, page, pageSize) {
   return articleRepository.getCommentList(
     articleId,
     (page - 1) * pageSize,
@@ -45,14 +39,22 @@ export async function getCommentListService(req) {
   );
 }
 
-export async function postArticlesLikeService(req) {
-  const { userId } = req.user;
-  const { articleId } = req.params;
+async function postArticlesLike(userId, articleId) {
   return articleRepository.postArticlesLike(userId, parseInt(articleId, 10));
 }
 
-export async function deleteArticlesLikeService(req) {
-  const { userId } = req.user;
-  const { articleId } = req.params;
+async function deleteArticlesLike(userId, articleId) {
   return articleRepository.deleteArticlesLike(userId, parseInt(articleId, 10));
 }
+
+export default {
+  createArticle,
+  getArticle,
+  updateArticle,
+  deleteArticle,
+  getArticleList,
+  createComment,
+  getCommentList,
+  postArticlesLike,
+  deleteArticlesLike,
+};

@@ -39,15 +39,14 @@ function verifyProductAuth(req, res, next) {
         });
         // 상품id값확인
         if (!product) {
-            const error = new Error("product not found");
-            error.code = 404;
-            throw error;
+            throw new Error("product not found");
+        }
+        if (!req.user) {
+            throw new Error("user not found");
         }
         // product모델의 userid값과 요청한 유저 아이디값
-        if (product.userId !== req.user.userId) {
-            const error = new Error("forbbiden");
-            error.code = 403;
-            throw error;
+        if (product.userId !== req.user.id) {
+            throw new Error("forbbiden");
         }
         return next();
     });
@@ -61,14 +60,13 @@ function verifyAricleAuth(req, res, next) {
                 where: { id: articleIdInt },
             });
             if (!article) {
-                const error = new Error("product not found");
-                error.code = 404;
-                throw error;
+                throw new Error("product not found");
             }
-            if (article.userId !== req.user.userId) {
-                const error = new Error("forbbiden");
-                error.code = 403;
-                throw error;
+            if (!req.user) {
+                throw new Error("user not found");
+            }
+            if (article.userId !== req.user.id) {
+                throw new Error("forbbiden");
             }
             return next();
         }
@@ -86,14 +84,13 @@ function verifyCommentAuth(req, res, next) {
                 where: { id: commentIdInt },
             });
             if (!comment) {
-                const error = new Error("comment not found");
-                error.code = 404;
-                throw error;
+                throw new Error("comment not found");
             }
-            if (comment.userId !== req.user.userId) {
-                const error = new Error("forbbiden");
-                error.code = 403;
-                throw error;
+            if (!req.user) {
+                throw new Error("user not found");
+            }
+            if (comment.userId !== req.user.id) {
+                throw new Error("forbbiden");
             }
             return next();
         }

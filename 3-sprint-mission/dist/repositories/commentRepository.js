@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createComment = createComment;
 const prismaClient_1 = require("../lib/prismaClient");
 function getCommentById(id) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -28,8 +29,26 @@ function deleteComment(id) {
         return yield prismaClient_1.prismaClient.comment.delete({ where: { id } });
     });
 }
+function createComment(productId, content, userId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return prismaClient_1.prismaClient.comment.create({
+            data: { productId, content, userId },
+        });
+    });
+}
+function getComments(productId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return prismaClient_1.prismaClient.comment.findMany({
+            where: {
+                productId,
+            },
+        });
+    });
+}
 exports.default = {
     getCommentById,
     updateComment,
     deleteComment,
+    createComment,
+    getComments,
 };

@@ -1,6 +1,7 @@
+import { UserUpdate, User } from "../dto/index";
 import { prismaClient } from "../lib/prismaClient";
 
-async function getById(id) {
+async function getById(id: number) {
   return await prismaClient.user.findUnique({
     where: {
       id: id,
@@ -8,7 +9,7 @@ async function getById(id) {
   });
 }
 
-async function getByEmail(email) {
+async function getByEmail(email: string) {
   return await prismaClient.user.findUnique({
     where: {
       email: email,
@@ -16,7 +17,7 @@ async function getByEmail(email) {
   });
 }
 
-async function changePassword(id, password) {
+async function changePassword(id: number, password: string) {
   return await prismaClient.user.update({
     where: {
       id: id,
@@ -27,7 +28,7 @@ async function changePassword(id, password) {
   });
 }
 
-async function deleteById(id) {
+async function deleteById(id: number) {
   return await prismaClient.user.delete({
     where: {
       id: id,
@@ -35,7 +36,7 @@ async function deleteById(id) {
   });
 }
 
-async function update(id, data) {
+async function update(id: number, data: UserUpdate) {
   return await prismaClient.user.update({
     where: {
       id: id,
@@ -44,7 +45,7 @@ async function update(id, data) {
   });
 }
 
-async function save(user) {
+async function save(user: User) {
   return await prismaClient.user.create({
     data: {
       email: user.email,

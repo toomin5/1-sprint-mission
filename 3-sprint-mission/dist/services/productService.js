@@ -19,16 +19,14 @@ function createProduct(userId, product) {
             throw new Error("required data");
         }
         if (!userId) {
-            const error = new Error("userId not found");
-            error.code = 400;
-            throw error;
+            throw new Error("userId not found");
         }
         return yield productRepository_1.default.save(userId, product);
     });
 }
 function getProduct(id) {
     return __awaiter(this, void 0, void 0, function* () {
-        const parseIntId = parseInt(id);
+        const parseIntId = id;
         if (!id) {
             throw new Error("product id required");
         }
@@ -37,7 +35,7 @@ function getProduct(id) {
 }
 function updateProduct(id, data) {
     return __awaiter(this, void 0, void 0, function* () {
-        const parseIntId = parseInt(id, 10);
+        const parseIntId = id;
         const product = yield productRepository_1.default.getById(id);
         if (!product) {
             throw new Error("Product not found");
@@ -47,7 +45,7 @@ function updateProduct(id, data) {
 }
 function removeProduct(id, userId) {
     return __awaiter(this, void 0, void 0, function* () {
-        const parseIntId = parseInt(id, 10);
+        const parseIntId = id;
         const product = yield productRepository_1.default.getById(id);
         console.log(parseIntId, userId);
         if (!product) {
@@ -63,13 +61,14 @@ function getProductList(page, pageSize, orderBy, keyword) {
             return result;
         }
         catch (error) {
-            throw new Error(error.message);
+            if (error instanceof Error)
+                throw new Error(error.message);
         }
     });
 }
 function addLike(userId, productId) {
     return __awaiter(this, void 0, void 0, function* () {
-        const parseIntProductId = parseInt(productId, 10);
+        const parseIntProductId = productId;
         if (!parseIntProductId) {
             throw new Error("product not found");
         }
@@ -83,7 +82,7 @@ function addLike(userId, productId) {
 }
 function deleteLike(userId, productId) {
     return __awaiter(this, void 0, void 0, function* () {
-        const parseIntProductId = parseInt(productId, 10);
+        const parseIntProductId = productId;
         if (!parseIntProductId) {
             throw new Error("product not found");
         }

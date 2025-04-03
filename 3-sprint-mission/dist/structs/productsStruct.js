@@ -38,7 +38,7 @@ const s = __importStar(require("superstruct"));
 exports.CreateProductBodyStruct = s.object({
     name: s.size(s.string(), 1, 50),
     description: s.size(s.string(), 1, 255),
-    price: s.min(s.integer()),
+    price: s.min(s.integer(), 0),
     tags: s.array(s.string()),
     images: s.array(s.string()),
 });

@@ -1,13 +1,14 @@
 import userRepository from "../repositories/userRepository";
 import bcrypt from "bcrypt";
-import { createToken } from "../middleware/token";
+import { createToken } from "../lib/tokens";
+import { CreateUser, User } from "../dto/index";
 
 // password hashing
-async function hashingPassword(password) {
+async function hashingPassword(password: string) {
   return bcrypt.hash(password, 10);
 }
 
-async function isValidPassword(password, hashedPassword) {
+async function isValidPassword(password: string, hashedPassword: string) {
   const match = await bcrypt.compare(password, hashedPassword);
 
   if (!match) {
@@ -16,12 +17,13 @@ async function isValidPassword(password, hashedPassword) {
 }
 // password,token filter
 // 비구조화할당 , rest operator
-async function filterSensitiveUserData(user) {
+async function filterSensitiveUserData(user: User) {
   const { password, refreshToken, ...rest } = user;
   return rest;
 }
 
-async function createUser(email, nickname, password, image) {
+async function createUser(data: CreateUser) {
+  const { email, nickname, password, image } = data;
   const existedUser = await userRepository.getByEmail(email);
 
   if (existedUser) {
@@ -30,16 +32,14 @@ async function createUser(email, nickname, password, image) {
 
   const hashedPwd = await hashingPassword(password);
   const newUser = await userRepository.save({
-    email,
-    nickname,
+    ...data,
     password: hashedPwd,
     image: image || null,
   });
-
   return filterSensitiveUserData(newUser);
 }
 
-async function validUser(email, password) {
+async function validUser(email: string, password: string) {
   const user = await userRepository.getByEmail(email);
 
   if (!user) {
@@ -49,26 +49,34 @@ async function validUser(email, password) {
   return filterSensitiveUserData(user);
 }
 
-async function update(id, data) {
+// refreshToken이 필요
+async function update(id: number, data: Partial<User>) {
   return await userRepository.update(id, data);
 }
 
-async function meInfo(id) {
+async function meInfo(id: number) {
   const user = await userRepository.getById(id);
+  if (!user) {
+    throw new Error("user not found");
+  }
   return filterSensitiveUserData(user);
 }
 
-async function refreshAccessToken(userId, refreshToken) {
+async function refreshAccessToken(userId: number, refreshToken: string) {
   const user = await userRepository.getById(userId);
 
   if (!user || user.refreshToken !== refreshToken) {
     throw new Error("unauthorized");
   }
-  const accessToken = createToken(user);
+  const accessToken = createToken(user, "access");
   return accessToken;
 }
 
-async function patchPassword(id, password, newPassword) {
+async function patchPassword(
+  id: number,
+  password: string,
+  newPassword: string
+) {
   const user = await userRepository.getById(id);
   console.log(user);
   console.log("password:", password, "newPassword:", newPassword);

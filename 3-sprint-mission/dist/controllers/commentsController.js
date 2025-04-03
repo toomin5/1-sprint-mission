@@ -14,20 +14,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateComment = updateComment;
 exports.deleteComment = deleteComment;
-const superstruct_1 = require("superstruct");
-const commentsStruct_1 = require("../structs/commentsStruct");
 const commentService_1 = __importDefault(require("../services/commentService"));
 function updateComment(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { id } = (0, superstruct_1.create)(req.params, IdParamsStruct);
-        const { content } = (0, superstruct_1.create)(req.body, commentsStruct_1.UpdateCommentBodyStruct);
+        const id = parseInt(req.params.id, 10);
+        const { content } = req.body;
         const updateComment = yield commentService_1.default.updateComment(id, content);
         return res.status(201).send(updateComment);
     });
 }
 function deleteComment(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { id } = req.params;
+        const id = parseInt(req.params.id, 10);
         yield commentService_1.default.deleteComment(id);
         return res.status(204).send({ message: "deleted" });
     });

@@ -23,9 +23,14 @@ const userService_1 = __importDefault(require("../services/userService"));
 // signUp
 function createUser(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { email, nickname, password } = req.body;
+        const { email, nickname, password, image } = req.body;
         try {
-            const user = yield userService_1.default.createUser(email, nickname, password);
+            const user = yield userService_1.default.createUser({
+                email,
+                nickname,
+                password,
+                image,
+            });
             return res.send(user);
         }
         catch (error) {
@@ -39,9 +44,11 @@ function getUser(req, res, next) {
         const { email, password } = req.body;
         try {
             const user = yield userService_1.default.validUser(email, password);
-            const accessToken = (0, tokens_1.createToken)(user);
+            const accessToken = (0, tokens_1.createToken)(user, "access");
             const refreshToken = (0, tokens_1.createToken)(user, "refresh");
-            yield userService_1.default.update(user.id, { refreshToken });
+            if (user.id) {
+                yield userService_1.default.update(user.id, { refreshToken });
+            }
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: true,
                 sameSite: "none",
@@ -70,10 +77,12 @@ function refreshToken(req, res, next) {
 }
 function getUserInfo(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        const id = req.user.userId;
-        console.log(id);
+        if (!req.user) {
+            throw new Error("user not found");
+        }
+        const userId = req.user.id;
         try {
-            const user = yield userService_1.default.meInfo(id);
+            const user = yield userService_1.default.meInfo(userId);
             return res.status(200).send(user);
         }
         catch (error) {
@@ -83,7 +92,10 @@ function getUserInfo(req, res, next) {
 }
 function patchUser(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { userId } = req.user;
+        if (!req.user) {
+            throw new Error("user not found");
+        }
+        const userId = req.user.id;
         const patchData = req.body;
         const patchedUser = yield userService_1.default.update(userId, patchData);
         return res.status(200).send(patchedUser);
@@ -91,7 +103,10 @@ function patchUser(req, res) {
 }
 function patchUserPassword(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { userId } = req.user;
+        if (!req.user) {
+            throw new Error("user not found");
+        }
+        const userId = req.user.id;
         const { password, newPassword } = req.body;
         yield userService_1.default.patchPassword(userId, password, newPassword);
         res.status(200);

@@ -23,12 +23,14 @@ exports.postProductsLike = postProductsLike;
 exports.deleteProductsLike = deleteProductsLike;
 exports.getUserProducts = getUserProducts;
 exports.getUserLikeProducts = getUserLikeProducts;
-const prismaClient_1 = require("../lib/prismaClient");
+const commentService_1 = __importDefault(require("../services/commentService"));
 const productService_1 = __importDefault(require("../services/productService"));
-const commentsStruct_1 = require("../structs/commentsStruct");
 function createProduct(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { userId } = req.user;
+        if (!req.user) {
+            throw new Error("user not found");
+        }
+        const { id: userId } = req.user;
         const product = req.body;
         const newProduct = yield productService_1.default.createProduct(userId, product);
         res.status(201).json(newProduct);
@@ -36,14 +38,14 @@ function createProduct(req, res) {
 }
 function getProduct(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { id } = req.params;
-        const product = yield productService_1.default.getProduct(id);
+        const productId = parseInt(req.params.id, 10);
+        const product = yield productService_1.default.getProduct(productId);
         return res.send(product);
     });
 }
 function updateProduct(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { id } = req.params;
+        const id = parseInt(req.params.id, 10);
         const data = req.body;
         const updatedProduct = yield productService_1.default.updateProduct(id, data);
         return res.send(updatedProduct);
@@ -51,7 +53,10 @@ function updateProduct(req, res) {
 }
 function deleteProduct(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { id } = req.params;
+        if (!req.user) {
+            throw new Error("user not found");
+        }
+        const id = parseInt(req.params.id, 10);
         const userId = req.user.id;
         yield productService_1.default.removeProduct(id, userId);
         return res.status(200).send({ message: "deleted!" });
@@ -59,77 +64,70 @@ function deleteProduct(req, res) {
 }
 function getProductList(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { page = 1, pageSize = 10, orderBy, keyword } = req.query;
+        const page = parseInt(req.query.page, 10) || 1;
+        const pageSize = parseInt(req.query.pageSize, 10) || 10;
+        function isValidOrder(value) {
+            return value === "recent" || value === "oldset";
+        }
+        const orderBy = isValidOrder(req.query.orderBy)
+            ? req.query.orderBy
+            : "recent";
+        const keyword = req.query.orderBy;
         try {
             const result = yield productService_1.default.getProductList(page, pageSize, orderBy, keyword);
             return res.send(result);
         }
         catch (error) {
-            return res.status(500).send({ error: error.message });
+            if (error instanceof Error)
+                return res.status(500).send({ error: error.message });
         }
     });
 }
 function createComment(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { id: productId } = create(req.params, IdParamsStruct);
-        const { content } = create(req.body, commentsStruct_1.CreateCommentBodyStruct);
-        const { userId } = req.user;
-        const existingProduct = yield prismaClient_1.prismaClient.product.findUnique({
-            where: { id: productId },
-        });
-        if (!existingProduct) {
-            const error = new Error("product not found");
-            error.code = 404;
-            throw error;
+        if (!req.user) {
+            throw new Error("user not found");
         }
-        const comment = yield prismaClient_1.prismaClient.comment.create({
-            data: {
-                productId,
-                content,
-                userId,
-            },
-        });
-        return res.status(201).send(comment);
+        try {
+            const productId = parseInt(req.params.id, 10);
+            const { content } = req.body;
+            const { id: userId } = req.user;
+            const comment = yield commentService_1.default.createComment(productId, content, userId);
+            return res.status(201).send(comment);
+        }
+        catch (error) {
+            return res.status(500).send("internal server error");
+        }
     });
 }
 function getCommentList(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { id: productId } = create(req.params, IdParamsStruct);
-        const { cursor, limit } = create(req.query, GetCommentListParamsStruct);
-        const existingProduct = yield prismaClient_1.prismaClient.product.findUnique({
-            where: { id: productId },
-        });
-        if (!existingProduct) {
-            const error = new Error("product not found");
-            error.code = 404;
-            throw error;
+        try {
+            const productId = parseInt(req.params.id, 10);
+            const comments = yield commentService_1.default.getComments(productId);
+            return res.status(200).send(comments);
         }
-        const commentsWithCursorComment = yield prismaClient_1.prismaClient.comment.findMany({
-            cursor: cursor ? { id: cursor } : undefined,
-            take: limit + 1,
-            where: { productId },
-        });
-        const comments = commentsWithCursorComment.slice(0, limit);
-        const cursorComment = commentsWithCursorComment[comments.length - 1];
-        const nextCursor = cursorComment ? cursorComment.id : null;
-        return res.send({
-            list: comments,
-            nextCursor,
-        });
+        catch (error) {
+            return res.status(500).send("internal server error");
+        }
     });
 }
 function postProductsLike(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { userId } = req.user;
-        const { productId } = req.params;
+        if (!req.user) {
+            throw new Error("user not found");
+        }
+        const { id: userId } = req.user;
+        const productId = parseInt(req.params.id, 10);
         try {
             const like = yield productService_1.default.addLike(userId, productId);
             return res.status(201).send(like);
         }
         catch (error) {
-            if (error.message === "Product not found") {
-                return res.status(404).json({ message: "Product not found" });
-            }
+            if (error instanceof Error)
+                if (error.message === "Product not found") {
+                    return res.status(404).json({ message: "Product not found" });
+                }
             return res.status(500).json({ message: "Server error", error });
         }
     });
@@ -138,30 +136,37 @@ function postProductsLike(req, res) {
 // 상품좋아요를 누른 유저들중에 로그인한 유저가 있다면 에러
 function deleteProductsLike(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { userId } = req.user;
-        const { productId } = req.params;
+        if (!req.user) {
+            throw new Error("user not found");
+        }
+        const { id: userId } = req.user;
+        const productId = parseInt(req.params.id, 10);
         try {
             const like = yield productService_1.default.deleteLike(userId, productId);
             return res.status(201).send(like);
         }
         catch (error) {
-            if (error.message === "Product not found") {
-                return res.status(404).json({ message: "Product not found" });
-            }
+            if (error instanceof Error)
+                if (error.message === "Product not found") {
+                    return res.status(404).json({ message: "Product not found" });
+                }
             return res.status(500).json({ message: "Server error", error });
         }
     });
 }
 function getUserProducts(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { userId } = req.params;
+        const userId = parseInt(req.params.id, 10);
         const products = yield productService_1.default.getUserProducts(userId);
         return res.status(200).json({ products });
     });
 }
 function getUserLikeProducts(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { userId } = req.user;
+        if (!req.user) {
+            throw new Error("user not found");
+        }
+        const { id: userId } = req.user;
         console.log("userId:", userId);
         const products = yield productService_1.default.getUserLikeProducts(userId);
         return res.status(200).send(products);

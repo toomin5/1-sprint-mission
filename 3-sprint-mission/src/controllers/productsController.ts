@@ -1,46 +1,94 @@
-import { prismaClient } from "../lib/prismaClient";
+import { Request, Response } from "express";
+import { jwtPayload } from "../dto/index";
+import commentService from "../services/commentService";
 import productService from "../services/productService";
+import { NextFunction } from "connect";
 
-import { CreateCommentBodyStruct } from "../structs/commentsStruct";
+export async function createProduct(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const user = req.user as jwtPayload;
+    const userId = user.id;
+    const product = req.body;
 
-export async function createProduct(req, res) {
-  const { userId } = req.user;
-  const product = req.body;
+    const newProduct = await productService.createProduct(userId, product);
 
-  const newProduct = await productService.createProduct(userId, product);
-
-  res.status(201).json(newProduct);
+    res.status(201).json(newProduct);
+  } catch (error) {
+    next(error);
+  }
 }
 
-export async function getProduct(req, res) {
-  const { id } = req.params;
+export async function getProduct(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const productId = parseInt(req.params.id, 10);
 
-  const product = await productService.getProduct(id);
+    const product = await productService.getProduct(productId);
 
-  return res.send(product);
+    return res.send(product);
+  } catch (error) {
+    next(error);
+  }
 }
 
-export async function updateProduct(req, res) {
-  const { id } = req.params;
-  const data = req.body;
+export async function updateProduct(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const data = req.body;
 
-  const updatedProduct = await productService.updateProduct(id, data);
+    const updatedProduct = await productService.updateProduct(id, data);
 
-  return res.send(updatedProduct);
+    return res.send(updatedProduct);
+  } catch (error) {
+    next(error);
+  }
 }
 
-export async function deleteProduct(req, res) {
-  const { id } = req.params;
-  const userId = req.user.id;
+export async function deleteProduct(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const user = req.user as jwtPayload;
+    const userId = user.id;
+    const id = parseInt(req.params.id, 10);
 
-  await productService.removeProduct(id, userId);
+    await productService.removeProduct(id, userId);
 
-  return res.status(200).send({ message: "deleted!" });
+    return res.status(200).send({ message: "deleted!" });
+  } catch (error) {
+    next(error);
+  }
 }
 
-export async function getProductList(req, res) {
-  const { page = 1, pageSize = 10, orderBy, keyword } = req.query;
+export async function getProductList(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const page = parseInt(req.query.page as string, 10) || 1;
+  const pageSize = parseInt(req.query.pageSize as string, 10) || 10;
 
+  function isValidOrder(value: any): value is "recent" | "oldset" {
+    return value === "recent" || value === "oldset";
+  }
+
+  const orderBy = isValidOrder(req.query.orderBy)
+    ? req.query.orderBy
+    : "recent";
+  const keyword = req.query.orderBy as string;
   try {
     const result = await productService.getProductList(
       page,
@@ -50,106 +98,110 @@ export async function getProductList(req, res) {
     );
     return res.send(result);
   } catch (error) {
-    return res.status(500).send({ error: error.message });
+    next(error);
   }
 }
 
-export async function createComment(req, res) {
-  const { id: productId } = req.params;
-  const { content } = req.body;
-  const { userId } = req.user;
+export async function createComment(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const productId = parseInt(req.params.id, 10);
+    const { content } = req.body;
+    const user = req.user as jwtPayload;
+    const userId = user.id;
 
-  const existingProduct = await prismaClient.product.findUnique({
-    where: { id: productId },
-  });
-  if (!existingProduct) {
-    const error = new Error("product not found");
-    error.code = 404;
-    throw error;
-  }
-
-  const comment = await prismaClient.comment.create({
-    data: {
+    const comment = await commentService.createComment(
       productId,
       content,
-      userId,
-    },
-  });
+      userId
+    );
 
-  return res.status(201).send(comment);
-}
-
-export async function getCommentList(req, res) {
-  const { id: productId } = req.params;
-  const { cursor, limit } = req.query;
-
-  const existingProduct = await prismaClient.product.findUnique({
-    where: { id: productId },
-  });
-  if (!existingProduct) {
-    const error = new Error("product not found");
-    error.code = 404;
-    throw error;
+    return res.status(201).send(comment);
+  } catch (error) {
+    next(error);
   }
-
-  const commentsWithCursorComment = await prismaClient.comment.findMany({
-    cursor: cursor ? { id: cursor } : undefined,
-    take: limit + 1,
-    where: { productId },
-  });
-  const comments = commentsWithCursorComment.slice(0, limit);
-  const cursorComment = commentsWithCursorComment[comments.length - 1];
-  const nextCursor = cursorComment ? cursorComment.id : null;
-
-  return res.send({
-    list: comments,
-    nextCursor,
-  });
 }
 
-export async function postProductsLike(req, res) {
-  const { userId } = req.user;
-  const { productId } = req.params;
+export async function getCommentList(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const productId = parseInt(req.params.id, 10);
+    const comments = await commentService.getComments(productId);
+    return res.status(200).send(comments);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function postProductsLike(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user as jwtPayload;
+  const userId = user.id;
+  const productId = parseInt(req.params.id, 10);
   try {
     const like = await productService.addLike(userId, productId);
     return res.status(201).send(like);
   } catch (error) {
-    if (error.message === "Product not found") {
-      return res.status(404).json({ message: "Product not found" });
-    }
-    return res.status(500).json({ message: "Server error", error });
+    next(error);
   }
 }
 
 // 유저정보를 가져온다 -> 상품id가져오기 -> 좋아요 버튼 -> 증가 -> productlikes에 유저,상품정보 업데이트
 // 상품좋아요를 누른 유저들중에 로그인한 유저가 있다면 에러
 
-export async function deleteProductsLike(req, res) {
-  const { userId } = req.user;
-  const { productId } = req.params;
+export async function deleteProductsLike(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user as jwtPayload;
+  const userId = user.id;
+  const productId = parseInt(req.params.id, 10);
 
   try {
     const like = await productService.deleteLike(userId, productId);
     return res.status(201).send(like);
   } catch (error) {
-    if (error.message === "Product not found") {
-      return res.status(404).json({ message: "Product not found" });
-    }
-    return res.status(500).json({ message: "Server error", error });
+    next(error);
   }
 }
 
-export async function getUserProducts(req, res) {
-  const { userId } = req.params;
-  const products = await productService.getUserProducts(userId);
+export async function getUserProducts(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const userId = parseInt(req.params.id, 10);
+    const products = await productService.getUserProducts(userId);
 
-  return res.status(200).json({ products });
+    return res.status(200).json({ products });
+  } catch (error) {
+    next(error);
+  }
 }
 
-export async function getUserLikeProducts(req, res) {
-  const { userId } = req.user;
-  console.log("userId:", userId);
+export async function getUserLikeProducts(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const user = req.user as jwtPayload;
+    const userId = user.id;
 
-  const products = await productService.getUserLikeProducts(userId);
-  return res.status(200).send(products);
+    const products = await productService.getUserLikeProducts(userId);
+    return res.status(200).send(products);
+  } catch (error) {
+    next(error);
+  }
 }

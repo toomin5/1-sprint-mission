@@ -1,6 +1,7 @@
 import { prismaClient } from "../lib/prismaClient";
+import { Product } from "../dto/index";
 
-async function save(userId, product) {
+async function save(userId: number, product: Product) {
   return await prismaClient.product.create({
     data: {
       name: product.name,
@@ -14,26 +15,24 @@ async function save(userId, product) {
   });
 }
 
-async function getById(id) {
-  const parseIntId = parseInt(id, 10);
+async function getById(id: number) {
   console.log("getbyId호출됨");
   return await prismaClient.product.findUnique({
     where: {
-      id: parseIntId,
+      id: id,
     },
   });
 }
 
-async function getUserId(userId) {
-  const parseIntId = parseInt(userId, 10);
+async function getUserId(userId: number) {
   return await prismaClient.product.findMany({
     where: {
-      userId: parseIntId,
+      id: userId,
     },
   });
 }
 
-async function update(id, data) {
+async function update(id: number, data: Product) {
   return await prismaClient.product.update({
     where: {
       id: id,
@@ -42,16 +41,20 @@ async function update(id, data) {
   });
 }
 
-async function remove(id, data) {
+async function remove(id: number) {
   return await prismaClient.product.delete({
     where: {
       id: id,
     },
-    data: data,
   });
 }
 
-async function getProductList(page, pageSize, orderBy, keyword) {
+async function getProductList(
+  page: number,
+  pageSize: number,
+  orderBy: "recent" | "oldset",
+  keyword: string
+) {
   const where = keyword
     ? {
         OR: [
@@ -72,11 +75,11 @@ async function getProductList(page, pageSize, orderBy, keyword) {
 
     return { list: products, totalCount };
   } catch (error) {
-    throw new Error(error.message);
+    if (error instanceof Error) throw new Error(error.message);
   }
 }
 
-async function addLike(userId, productId) {
+async function addLike(userId: number, productId: number) {
   return await prismaClient.productLikes.create({
     data: {
       userId,
@@ -85,7 +88,7 @@ async function addLike(userId, productId) {
   });
 }
 
-async function deleteLike(userId, productId) {
+async function deleteLike(userId: number, productId: number) {
   return await prismaClient.productLikes.deleteMany({
     where: {
       userId,
@@ -94,7 +97,7 @@ async function deleteLike(userId, productId) {
   });
 }
 
-async function userLikeProducts(userId) {
+async function userLikeProducts(userId: number) {
   return await prismaClient.product.findMany({
     where: { ProductLikes: { some: { userId } } },
     select: {

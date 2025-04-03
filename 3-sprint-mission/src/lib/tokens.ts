@@ -1,11 +1,16 @@
 import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "./constants";
+import ms from "ms";
+import { JWT_SECRET } from "../lib/constants";
+import { User } from "../dto/index";
 
 // access , refresh
-export function createToken(user, type) {
+export function createToken(
+  user: Pick<User, "id">,
+  type: "access" | "refresh"
+) {
   const payload = { userId: user.id };
   const options = {
-    expiresIn: type === "refresh" ? "2w" : "1h",
+    expiresIn: ms(type === "refresh" ? "2w" : "1h"),
   };
   return jwt.sign(payload, JWT_SECRET, options);
 }

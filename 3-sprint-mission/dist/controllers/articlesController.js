@@ -24,6 +24,9 @@ exports.deleteArticleLike = deleteArticleLike;
 const articleService_1 = __importDefault(require("../services/articleService"));
 function createArticle(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
+        if (!req.user) {
+            throw new Error("user not found");
+        }
         const userId = req.user.id;
         const articleData = req.body;
         const newArticle = yield articleService_1.default.createArticle(userId, articleData);
@@ -48,7 +51,6 @@ function updateArticle(req, res) {
 function deleteArticle(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { id } = req.params;
-        const { id: userId } = req.user;
         yield articleService_1.default.deleteArticle(parseInt(id, 10));
         return res.status(204).send();
     });
@@ -65,6 +67,9 @@ function getArticleList(req, res) {
 }
 function createComment(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
+        if (!req.user) {
+            throw new Error("user not found");
+        }
         const { id: articleId } = req.params;
         const { content } = req.body;
         const { id: userId } = req.user;
@@ -83,6 +88,9 @@ function getCommentList(req, res) {
 }
 function postArticleLike(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
+        if (!req.user) {
+            throw new Error("user not found");
+        }
         const { id: userId } = req.user;
         const articleId = parseInt(req.params.articleId, 10);
         const updatedArticle = yield articleService_1.default.postArticlesLike(userId, articleId);
@@ -91,6 +99,9 @@ function postArticleLike(req, res) {
 }
 function deleteArticleLike(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
+        if (!req.user) {
+            throw new Error("user not found");
+        }
         const { id: userId } = req.user;
         const articleId = parseInt(req.params.articleId, 10);
         const updatedArticle = yield articleService_1.default.deleteArticlesLike(userId, articleId);

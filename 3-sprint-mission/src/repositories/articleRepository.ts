@@ -1,21 +1,7 @@
 import { prismaClient } from "../lib/prismaClient";
-import { ArticleData } from "../services/articleService";
+import { CreateComment, CreateArticle, UpdateArticle } from "../dto/index";
 
-interface Article {
-  id: number;
-  title: string;
-  content: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-interface CommentData {
-  articleId: number;
-  userId: number;
-  content: string;
-}
-
-async function save(data: { title: string; content: string; userId: number }) {
+async function save(data: CreateArticle) {
   return await prismaClient.article.create({
     data,
   });
@@ -27,7 +13,7 @@ async function getArticleById(id: number) {
   });
 }
 
-async function update(id: number, data: Partial<ArticleData>) {
+async function update(id: number, data: UpdateArticle) {
   return await prismaClient.article.update({
     where: { id },
     data,
@@ -45,7 +31,7 @@ async function getArticleList(
   skip: number,
   take: number,
   orderBy: Record<string, "asc" | "desc">
-): Promise<{ list: Article[]; totalCount: number }> {
+): Promise<{ list: CreateArticle[]; totalCount: number }> {
   const totalCount = await prismaClient.article.count({
     where,
   });
@@ -58,7 +44,7 @@ async function getArticleList(
   return { list: articles, totalCount };
 }
 
-async function createComment(data: CommentData) {
+async function createComment(data: CreateComment) {
   return await prismaClient.comment.create({
     data,
   });

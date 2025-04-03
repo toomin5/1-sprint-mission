@@ -27,21 +27,19 @@ function save(userId, product) {
 }
 function getById(id) {
     return __awaiter(this, void 0, void 0, function* () {
-        const parseIntId = parseInt(id, 10);
         console.log("getbyId호출됨");
         return yield prismaClient_1.prismaClient.product.findUnique({
             where: {
-                id: parseIntId,
+                id: id,
             },
         });
     });
 }
 function getUserId(userId) {
     return __awaiter(this, void 0, void 0, function* () {
-        const parseIntId = parseInt(userId, 10);
         return yield prismaClient_1.prismaClient.product.findMany({
             where: {
-                userId: parseIntId,
+                id: userId,
             },
         });
     });
@@ -56,13 +54,12 @@ function update(id, data) {
         });
     });
 }
-function remove(id, data) {
+function remove(id) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield prismaClient_1.prismaClient.product.delete({
             where: {
                 id: id,
             },
-            data: data,
         });
     });
 }
@@ -87,7 +84,8 @@ function getProductList(page, pageSize, orderBy, keyword) {
             return { list: products, totalCount };
         }
         catch (error) {
-            throw new Error(error.message);
+            if (error instanceof Error)
+                throw new Error(error.message);
         }
     });
 }

@@ -25,7 +25,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const userRepository_1 = __importDefault(require("../repositories/userRepository"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
-const token_1 = require("../middleware/token");
+const tokens_1 = require("../lib/tokens");
 // password hashing
 function hashingPassword(password) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -48,19 +48,15 @@ function filterSensitiveUserData(user) {
         return rest;
     });
 }
-function createUser(email, nickname, password, image) {
+function createUser(data) {
     return __awaiter(this, void 0, void 0, function* () {
+        const { email, nickname, password, image } = data;
         const existedUser = yield userRepository_1.default.getByEmail(email);
         if (existedUser) {
             throw new Error("already user Email");
         }
         const hashedPwd = yield hashingPassword(password);
-        const newUser = yield userRepository_1.default.save({
-            email,
-            nickname,
-            password: hashedPwd,
-            image: image || null,
-        });
+        const newUser = yield userRepository_1.default.save(Object.assign(Object.assign({}, data), { password: hashedPwd, image: image || null }));
         return filterSensitiveUserData(newUser);
     });
 }
@@ -82,6 +78,9 @@ function update(id, data) {
 function meInfo(id) {
     return __awaiter(this, void 0, void 0, function* () {
         const user = yield userRepository_1.default.getById(id);
+        if (!user) {
+            throw new Error("user not found");
+        }
         return filterSensitiveUserData(user);
     });
 }
@@ -91,7 +90,7 @@ function refreshAccessToken(userId, refreshToken) {
         if (!user || user.refreshToken !== refreshToken) {
             throw new Error("unauthorized");
         }
-        const accessToken = (0, token_1.createToken)(user);
+        const accessToken = (0, tokens_1.createToken)(user, "access");
         return accessToken;
     });
 }

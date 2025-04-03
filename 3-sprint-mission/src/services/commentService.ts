@@ -1,4 +1,6 @@
 import commentRepository from "../repositories/commentRepository";
+import productRepository from "../repositories/productRepository";
+import productService from "./productService";
 
 async function updateComment(id: number, content: string) {
   const existingComment = await commentRepository.getCommentById(id);
@@ -18,7 +20,29 @@ async function deleteComment(id: number) {
   await commentRepository.deleteComment(id);
 }
 
+async function createComment(
+  productId: number,
+  content: string,
+  userId: number
+) {
+  const existingProduct = await productService.getProduct(productId);
+  if (!existingProduct) {
+    throw new Error("product not found");
+  }
+  return commentRepository.createComment(productId, content, userId);
+}
+
+async function getComments(productId: number) {
+  const existingProduct = await productService.getProduct(productId);
+  if (!existingProduct) {
+    throw new Error("product not found");
+  }
+  return productRepository.getById(productId);
+}
+
 export default {
   updateComment,
   deleteComment,
+  createComment,
+  getComments,
 };

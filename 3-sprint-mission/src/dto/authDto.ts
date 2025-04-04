@@ -10,3 +10,7 @@ export interface jwtPayload {
   email: string;
   name: string;
 }
+
+export interface StatusError extends Error {
+  status?: number;
+}

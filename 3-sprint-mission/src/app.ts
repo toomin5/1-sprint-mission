@@ -8,6 +8,7 @@ import commentsRouter from "./routes/commentsRouter";
 import userRouter from "./routes/userRouter";
 
 import cookieParser from "cookie-parser";
+import { errorHandler } from "./middleware/errorHandler";
 
 const app = express();
 
@@ -21,6 +22,8 @@ app.use("/articles", articlesRouter);
 app.use("/products", productsRouter);
 app.use("/comments", commentsRouter);
 app.use("/users", userRouter);
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);

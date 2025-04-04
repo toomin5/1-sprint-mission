@@ -1,7 +1,7 @@
 import articleRepository from "../repositories/articleRepository";
-import { Article } from "../dto/index";
+import { CreateArticle, UpdateArticle } from "../dto/index";
 
-async function createArticle(userId: number, articleData: Article) {
+async function createArticle(userId: number, articleData: CreateArticle) {
   const data = { ...articleData, userId };
   return articleRepository.save(data);
 }
@@ -10,7 +10,7 @@ async function getArticle(id: number) {
   return articleRepository.getArticleById(id);
 }
 
-async function updateArticle(id: number, data: Partial<Article>) {
+async function updateArticle(id: number, data: UpdateArticle) {
   return articleRepository.update(id, data);
 }
 

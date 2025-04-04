@@ -3,17 +3,16 @@ export interface Product {
   name: string;
   description: string;
   price: number;
-  tags: string[];
-  images: string[];
-  likeCount?: number;
-  userId?: number;
+  tags?: string[];
+  images?: string[];
   createdAt: Date;
   updatedAt: Date;
 }
-
 export interface CreateProduct {
   name: string;
   description: string;
   price: number;
   tags: string[];
 }
+
+export interface UpdatedProduct extends Partial<CreateProduct> {}

@@ -1,9 +1,8 @@
-export interface Article {
+export interface ArticleResponseDto {
   id: number;
   title: string;
   content: string;
   image?: string | null;
-  userId: number;
   createdAt: Date;
   updatedAt: Date;
 }

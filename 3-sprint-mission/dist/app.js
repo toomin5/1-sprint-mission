@@ -12,6 +12,7 @@ const productsRouter_1 = __importDefault(require("./routes/productsRouter"));
 const commentsRouter_1 = __importDefault(require("./routes/commentsRouter"));
 const userRouter_1 = __importDefault(require("./routes/userRouter"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const errorHandler_1 = require("./middleware/errorHandler");
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
@@ -21,6 +22,7 @@ app.use("/articles", articlesRouter_1.default);
 app.use("/products", productsRouter_1.default);
 app.use("/comments", commentsRouter_1.default);
 app.use("/users", userRouter_1.default);
+app.use(errorHandler_1.errorHandler);
 app.listen(constants_1.PORT, () => {
     console.log(`Server started on port ${constants_1.PORT}`);
 });

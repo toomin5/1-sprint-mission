@@ -70,6 +70,7 @@ function validUser(email, password) {
         return filterSensitiveUserData(user);
     });
 }
+// refreshToken이 필요
 function update(id, data) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield userRepository_1.default.update(id, data);

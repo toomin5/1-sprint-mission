@@ -15,18 +15,28 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateComment = updateComment;
 exports.deleteComment = deleteComment;
 const commentService_1 = __importDefault(require("../services/commentService"));
-function updateComment(req, res) {
+function updateComment(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        const id = parseInt(req.params.id, 10);
-        const { content } = req.body;
-        const updateComment = yield commentService_1.default.updateComment(id, content);
-        return res.status(201).send(updateComment);
+        try {
+            const id = parseInt(req.params.id, 10);
+            const { content } = req.body;
+            const updateComment = yield commentService_1.default.updateComment(id, content);
+            return res.status(201).send(updateComment);
+        }
+        catch (error) {
+            next(error);
+        }
     });
 }
-function deleteComment(req, res) {
+function deleteComment(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        const id = parseInt(req.params.id, 10);
-        yield commentService_1.default.deleteComment(id);
-        return res.status(204).send({ message: "deleted" });
+        try {
+            const id = parseInt(req.params.id, 10);
+            yield commentService_1.default.deleteComment(id);
+            return res.status(204).send({ message: "deleted" });
+        }
+        catch (error) {
+            next(error);
+        }
     });
 }

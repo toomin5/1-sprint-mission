@@ -1,13 +1,12 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import articleService from "../services/articleService";
-import { jwtPayload } from "../dto/index";
+import { jwtPayload, ArticleResponseDto } from "../dto/index";
 
 export async function createArticle(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  // jwt타입지정하기전코드
   try {
     const user = req.user as jwtPayload;
     const userId = user.id;
@@ -15,7 +14,16 @@ export async function createArticle(
 
     const newArticle = await articleService.createArticle(userId, articleData);
 
-    res.status(201).json(newArticle);
+    const response: ArticleResponseDto = {
+      id: newArticle.id,
+      title: newArticle.title,
+      content: newArticle.content,
+      image: newArticle.image,
+      createdAt: newArticle.createdAt,
+      updatedAt: newArticle.updatedAt,
+    };
+
+    res.status(201).json(response);
   } catch (error) {
     next(error);
   }

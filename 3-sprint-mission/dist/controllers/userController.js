@@ -77,10 +77,8 @@ function refreshToken(req, res, next) {
 }
 function getUserInfo(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (!req.user) {
-            throw new Error("user not found");
-        }
-        const userId = req.user.id;
+        const user = req.user;
+        const userId = user.id;
         try {
             const user = yield userService_1.default.meInfo(userId);
             return res.status(200).send(user);
@@ -90,25 +88,31 @@ function getUserInfo(req, res, next) {
         }
     });
 }
-function patchUser(req, res) {
+function patchUser(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (!req.user) {
-            throw new Error("user not found");
+        try {
+            const user = req.user;
+            const userId = user.id;
+            const patchData = req.body;
+            const patchedUser = yield userService_1.default.update(userId, patchData);
+            return res.status(200).send(patchedUser);
         }
-        const userId = req.user.id;
-        const patchData = req.body;
-        const patchedUser = yield userService_1.default.update(userId, patchData);
-        return res.status(200).send(patchedUser);
+        catch (error) {
+            next(error);
+        }
     });
 }
-function patchUserPassword(req, res) {
+function patchUserPassword(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (!req.user) {
-            throw new Error("user not found");
+        try {
+            const user = req.user;
+            const userId = user.id;
+            const { password, newPassword } = req.body;
+            yield userService_1.default.patchPassword(userId, password, newPassword);
+            res.status(200);
         }
-        const userId = req.user.id;
-        const { password, newPassword } = req.body;
-        yield userService_1.default.patchPassword(userId, password, newPassword);
-        res.status(200);
+        catch (error) {
+            next(error);
+        }
     });
 }

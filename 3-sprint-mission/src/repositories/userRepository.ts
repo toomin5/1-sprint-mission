@@ -1,4 +1,4 @@
-import { UserUpdate, User } from "../dto/index";
+import { UpdateUser, User } from "../dto/index";
 import { prismaClient } from "../lib/prismaClient";
 
 async function getById(id: number) {
@@ -36,7 +36,7 @@ async function deleteById(id: number) {
   });
 }
 
-async function update(id: number, data: UserUpdate) {
+async function update(id: number, data: UpdateUser) {
   return await prismaClient.user.update({
     where: {
       id: id,

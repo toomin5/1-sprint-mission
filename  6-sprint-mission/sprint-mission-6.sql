@@ -43,9 +43,9 @@
 -- 9. `orders` 테이블에서 2025년 3월 12일 오전에 주문된 내역만 조회하세요.
 	SELECT *
 	FROM orders
-	WHERE date = '2025-03-12'
-	pizza_place-# AND time >= '00:00:00' 
-	pizza_place-# AND time < '12:00:00';
+	WHERE date = '2025-03-1g2'
+	AND time >= '00:00:00' 
+	AND time < '12:00:00';
 
 -- 10. `pizza_types` 테이블에서 이름에 'Cheese' 혹은 'Chicken'이 포함된 피자 종류를 조회하세요. (대소문자를 구분합니다)
 	SELECT * 

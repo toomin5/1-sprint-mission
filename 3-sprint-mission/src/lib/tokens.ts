@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import ms from "ms";
-import { JWT_SECRET } from "../lib/constants";
+import { JWT_SECRET } from "./constants";
 import { User } from "../dto/index";
 
 // access , refresh

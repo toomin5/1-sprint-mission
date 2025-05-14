@@ -1,11 +1,14 @@
-import * as s from "superstruct";
+import { coerce, partial, object, string, min, nonempty, array, integer } from 'superstruct';
+import { PageParamsStruct } from './commonStructs';
 
-export const CreateProductBodyStruct = s.object({
-  name: s.size(s.string(), 1, 50),
-  description: s.size(s.string(), 1, 255),
-  price: s.min(s.integer(), 0),
-  tags: s.array(s.string()),
-  images: s.array(s.string()),
+export const CreateProductBodyStruct = object({
+  name: coerce(nonempty(string()), string(), (value) => value.trim()),
+  description: nonempty(string()),
+  price: min(integer(), 0),
+  tags: array(nonempty(string())),
+  images: array(nonempty(string())),
 });
 
-export const UpdateProductBodyStruct = s.partial(CreateProductBodyStruct);
+export const GetProductListParamsStruct = PageParamsStruct;
+
+export const UpdateProductBodyStruct = partial(CreateProductBodyStruct);

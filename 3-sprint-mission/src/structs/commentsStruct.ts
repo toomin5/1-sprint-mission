@@ -1,7 +1,12 @@
-import * as s from "superstruct";
+import { nonempty, number, object, optional, string } from 'superstruct';
+import { CursorParamsStruct } from './commonStructs';
 
-export const CreateCommentBodyStruct = s.object({
-  content: s.size(s.string(), 1, 50),
+export const CreateCommentBodyStruct = object({
+  content: nonempty(string()),
+  productId: optional(number()),
+  articleId: optional(number()),
 });
 
-export const UpdateCommentBodyStruct = s.partial(CreateCommentBodyStruct);
+export const GetCommentListParamsStruct = CursorParamsStruct;
+
+export const UpdateCommentBodyStruct = CreateCommentBodyStruct;

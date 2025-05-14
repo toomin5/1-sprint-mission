@@ -1,187 +1,79 @@
-import { Request, Response, NextFunction, RequestHandler } from "express";
-import articleService from "../services/articleService";
-import { jwtPayload, ArticleResponseDto } from "../dto/index";
+import { Request, Response } from 'express';
+import { create } from 'superstruct';
+import { IdParamsStruct } from '../structs/commonStructs';
+import {
+  CreateArticleBodyStruct,
+  UpdateArticleBodyStruct,
+  GetArticleListParamsStruct,
+} from '../structs/articlesStructs';
+import { CreateCommentBodyStruct, GetCommentListParamsStruct } from '../structs/commentsStruct';
+import * as articlesService from '../services/articlesService';
+import * as commentsService from '../services/commentsService';
+import * as likesService from '../services/likesService';
 
-export async function createArticle(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const user = req.user as jwtPayload;
-    const userId = user.id;
-    const articleData = req.body;
-
-    const newArticle = await articleService.createArticle(userId, articleData);
-
-    const response: ArticleResponseDto = {
-      id: newArticle.id,
-      title: newArticle.title,
-      content: newArticle.content,
-      image: newArticle.image,
-      createdAt: newArticle.createdAt,
-      updatedAt: newArticle.updatedAt,
-    };
-
-    res.status(201).json(response);
-  } catch (error) {
-    next(error);
-  }
+export async function createArticle(req: Request, res: Response) {
+  const data = create(req.body, CreateArticleBodyStruct);
+  const article = await articlesService.createArticle({
+    ...data,
+    userId: req.user.id,
+  });
+  res.status(201).send(article);
 }
 
-export async function getArticle(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { id } = req.params;
-    const article = await articleService.getArticle(parseInt(id, 10));
-    return res.send(article);
-  } catch (error) {
-    next(error);
-  }
+export async function getArticle(req: Request, res: Response) {
+  const { id } = create(req.params, IdParamsStruct);
+  const article = await articlesService.getArticle(id);
+  res.send(article);
 }
 
-export async function updateArticle(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { id } = req.params;
-    const updateData = req.body;
-    const updatedArticle = await articleService.updateArticle(
-      parseInt(id, 10),
-      updateData
-    );
-    return res.send(updatedArticle);
-  } catch (error) {
-    next(error);
-  }
+export async function updateArticle(req: Request, res: Response) {
+  const { id } = create(req.params, IdParamsStruct);
+  const data = create(req.body, UpdateArticleBodyStruct);
+  const updatedArticle = await articlesService.updateArticle(id, {
+    ...data,
+    userId: req.user.id,
+  });
+  res.send(updatedArticle);
 }
 
-export async function deleteArticle(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const user = req.user as jwtPayload;
-    const userId = user.id;
-    await articleService.deleteArticle(userId);
-    return res.status(204).send();
-  } catch (error) {
-    next(error);
-  }
+export async function deleteArticle(req: Request, res: Response) {
+  const { id } = create(req.params, IdParamsStruct);
+  await articlesService.deleteArticle(id, req.user.id);
+  res.status(204).send();
 }
 
-export async function getArticleList(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const page = parseInt(String(req.query.page), 10) || 1;
-    const pageSize = parseInt(String(req.query.pageSize), 10) || 10;
-    const orderBy = String(req.query.orderBy || "");
-    const keyword = String(req.query.keyword || "");
-
-    const result = await articleService.getArticleList(
-      page,
-      pageSize,
-      orderBy,
-      keyword
-    );
-
-    return res.send(result);
-  } catch (error) {
-    next(error);
-  }
+export async function getArticleList(req: Request, res: Response) {
+  const params = create(req.query, GetArticleListParamsStruct);
+  const result = await articlesService.getArticleList(params);
+  res.send(result);
 }
 
-export async function createComment(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { id: articleId } = req.params;
-    const { content } = req.body;
-    const user = req.user as jwtPayload;
-    const userId = user.id;
-
-    const comment = await articleService.createComment(
-      parseInt(articleId, 10),
-      userId,
-      content
-    );
-
-    return res.status(201).send(comment);
-  } catch (error) {
-    next(error);
-  }
+export async function createComment(req: Request, res: Response) {
+  const { id: articleId } = create(req.params, IdParamsStruct);
+  const { content } = create(req.body, CreateCommentBodyStruct);
+  const createdComment = await commentsService.createComment({
+    articleId,
+    content,
+    userId: req.user.id,
+  });
+  res.status(201).send(createdComment);
 }
 
-export async function getCommentList(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const articleId = parseInt(req.params.id, 10);
-    const page = parseInt(req.query.page as string, 10) || 1;
-    const pageSize = parseInt(req.query.limit as string, 10) || 10;
-    const comments = await articleService.getCommentList(
-      articleId,
-      page,
-      pageSize
-    );
-
-    return res.send({ list: comments });
-  } catch (error) {
-    next(error);
-  }
+export async function getCommentList(req: Request, res: Response) {
+  const { id: articleId } = create(req.params, IdParamsStruct);
+  const { cursor, limit } = create(req.query, GetCommentListParamsStruct);
+  const result = await commentsService.getCommentListByArticleId(articleId, { cursor, limit });
+  res.send(result);
 }
 
-export async function postArticleLike(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const user = req.user as jwtPayload;
-    const userId = user.id;
-    const articleId = parseInt(req.params.articleId, 10);
-
-    const updatedArticle = await articleService.postArticlesLike(
-      userId,
-      articleId
-    );
-
-    return res.status(201).json(updatedArticle);
-  } catch (error) {
-    next(error);
-  }
+export async function createLike(req: Request, res: Response) {
+  const { id: articleId } = create(req.params, IdParamsStruct);
+  await likesService.createLike(articleId, req.user.id);
+  res.status(201).send();
 }
 
-export async function deleteArticleLike(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const user = req.user as jwtPayload;
-    const userId = user.id;
-    const articleId = parseInt(req.params.articleId, 10);
-
-    const updatedArticle = await articleService.deleteArticlesLike(
-      userId,
-      articleId
-    );
-
-    return res.status(200).json(updatedArticle);
-  } catch (error) {
-    next(error);
-  }
+export async function deleteLike(req: Request, res: Response) {
+  const { id: articleId } = create(req.params, IdParamsStruct);
+  await likesService.deleteLike(articleId, req.user.id);
+  res.status(204).send();
 }

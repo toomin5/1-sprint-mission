@@ -1,7 +1,9 @@
-import { Favorite } from '@prisma/client';
-import { prismaClient } from '../lib/prismaClient';
+import { Favorite } from "@prisma/client";
+import { prismaClient } from "../lib/prismaClient";
 
-export async function createFavorite(data: Omit<Favorite, 'id' | 'createdAt' | 'updatedAt'>) {
+export async function createFavorite(
+  data: Omit<Favorite, "id" | "createdAt" | "updatedAt">
+) {
   const createdFavorite = await prismaClient.favorite.create({
     data,
   });
@@ -18,5 +20,16 @@ export async function getFavorite(productId: number, userId: number) {
 export async function deleteFavorite(id: number) {
   await prismaClient.favorite.delete({
     where: { id },
+  });
+}
+
+export async function getLikedUsers(productId: number) {
+  return prismaClient.favorite.findMany({
+    where: {
+      productId,
+    },
+    select: {
+      userId: true,
+    },
   });
 }

@@ -1,8 +1,10 @@
-import { Product } from '@prisma/client';
-import { prismaClient } from '../lib/prismaClient';
-import { PagePaginationParams } from '../types/pagination';
+import { Product } from "@prisma/client";
+import { prismaClient } from "../lib/prismaClient";
+import { PagePaginationParams } from "../types/pagination";
 
-export async function createProduct(data: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) {
+export async function createProduct(
+  data: Omit<Product, "id" | "createdAt" | "updatedAt">
+) {
   return prismaClient.product.create({
     data,
   });
@@ -41,11 +43,14 @@ export async function getProductListWithFavorites(
     userId,
   }: {
     userId?: number;
-  } = {},
+  } = {}
 ) {
   const where = keyword
     ? {
-        OR: [{ name: { contains: keyword } }, { description: { contains: keyword } }],
+        OR: [
+          { name: { contains: keyword } },
+          { description: { contains: keyword } },
+        ],
       }
     : {};
 
@@ -56,7 +61,7 @@ export async function getProductListWithFavorites(
   const products = await prismaClient.product.findMany({
     skip: (page - 1) * pageSize,
     take: pageSize,
-    orderBy: orderBy === 'recent' ? { id: 'desc' } : { id: 'asc' },
+    orderBy: orderBy === "recent" ? { id: "desc" } : { id: "asc" },
     where,
     include: {
       favorites: true,
@@ -81,11 +86,14 @@ export async function getProductListWithFavorites(
 
 export async function getFavoriteProductListByOwnerId(
   ownerId: number,
-  { page, pageSize, orderBy, keyword }: PagePaginationParams,
+  { page, pageSize, orderBy, keyword }: PagePaginationParams
 ) {
   const where = keyword
     ? {
-        OR: [{ name: { contains: keyword } }, { description: { contains: keyword } }],
+        OR: [
+          { name: { contains: keyword } },
+          { description: { contains: keyword } },
+        ],
       }
     : {};
   const totalCount = await prismaClient.product.count({
@@ -101,7 +109,7 @@ export async function getFavoriteProductListByOwnerId(
   const products = await prismaClient.product.findMany({
     skip: (page - 1) * pageSize,
     take: pageSize,
-    orderBy: orderBy === 'recent' ? { id: 'desc' } : { id: 'asc' },
+    orderBy: orderBy === "recent" ? { id: "desc" } : { id: "asc" },
     where: {
       ...where,
       favorites: {
@@ -128,7 +136,10 @@ export async function getFavoriteProductListByOwnerId(
   };
 }
 
-export async function updateProductWithFavorites(id: number, data: Partial<Product>) {
+export async function updateProductWithFavorites(
+  id: number,
+  data: Partial<Product>
+) {
   const product = await prismaClient.product.update({
     where: { id },
     data,

@@ -20,6 +20,15 @@ export const users = [
     createdAt: new Date("2023-07-14T09:05:00Z"),
     updatedAt: new Date("2023-07-14T09:05:00Z"),
   },
+  {
+    id: 3,
+    email: "user3@example.com",
+    nickname: "닉네임3",
+    image: null,
+    password: hashedPassword,
+    createdAt: new Date("2023-07-14T09:05:00Z"),
+    updatedAt: new Date("2023-07-14T09:05:00Z"),
+  },
 ];
 
 export const products = [
@@ -104,6 +113,13 @@ export const favorites = [
     id: 1,
     productId: 1,
     userId: 2,
+    createdAt: new Date("2025-02-20T12:35:00Z"),
+    updatedAt: new Date("2025-02-20T12:35:00Z"),
+  },
+  {
+    id: 2,
+    productId: 1,
+    userId: 3,
     createdAt: new Date("2025-02-20T12:35:00Z"),
     updatedAt: new Date("2025-02-20T12:35:00Z"),
   },

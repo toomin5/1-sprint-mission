@@ -1,8 +1,10 @@
-import { Comment } from '@prisma/client';
-import { prismaClient } from '../lib/prismaClient';
-import { CursorPaginationParams } from '../types/pagination';
+import { Comment } from "@prisma/client";
+import { prismaClient } from "../lib/prismaClient";
+import { CursorPaginationParams } from "../types/pagination";
 
-export async function createComment(data: Omit<Comment, 'id' | 'createdAt' | 'updatedAt'>) {
+export async function createComment(
+  data: Omit<Comment, "id" | "createdAt" | "updatedAt">
+) {
   const createdComment = await prismaClient.comment.create({
     data,
   });
@@ -18,13 +20,13 @@ export async function getComment(id: number) {
 
 export async function getCommentList(
   where: { articleId?: number; productId?: number },
-  { cursor, limit }: CursorPaginationParams,
+  { cursor, limit }: CursorPaginationParams
 ) {
   const commentsWithCursor = await prismaClient.comment.findMany({
     cursor: cursor ? { id: cursor } : undefined,
     take: limit + 1,
     where,
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: "desc" },
   });
   const comments = commentsWithCursor.slice(0, limit);
   const cursorComment = commentsWithCursor[commentsWithCursor.length - 1];

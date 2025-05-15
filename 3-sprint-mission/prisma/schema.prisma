@@ -14,33 +14,31 @@ datasource db {
 }
 
 model Article {
-  id            Int            @id @default(autoincrement())
-  title         String
-  content       String
-  image         String?
-  comments      Comment[]
-  user          User           @relation(fields: [userId], references: [id])
-  userId        Int
-  likes         Like[]
-  notifications Notification[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id        Int       @id @default(autoincrement())
+  title     String
+  content   String
+  image     String?
+  comments  Comment[]
+  user      User      @relation(fields: [userId], references: [id])
+  userId    Int
+  likes     Like[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model Product {
-  id            Int            @id @default(autoincrement())
-  name          String
-  description   String
-  price         Int
-  tags          String[]
-  images        String[]
-  comments      Comment[]
-  user          User           @relation(fields: [userId], references: [id])
-  userId        Int
-  favorites     Favorite[]
-  notifications Notification[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String
+  price       Int
+  tags        String[]
+  images      String[]
+  comments    Comment[]
+  user        User       @relation(fields: [userId], references: [id])
+  userId      Int
+  favorites   Favorite[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 model Comment {
@@ -93,14 +91,17 @@ model Like {
 }
 
 model Notification {
-  id        Int      @id @default(autoincrement())
-  content   String
-  status    Boolean  @default(false)
-  User      User?    @relation(fields: [userId], references: [id])
+  id        Int              @id @default(autoincrement())
+  type      NotificationType
+  User      User?            @relation(fields: [userId], references: [id])
   userId    Int?
-  Product   Product? @relation(fields: [productId], references: [id])
-  productId Int?
-  Article   Article? @relation(fields: [articleId], references: [id])
-  articleId Int?
-  createdAt DateTime @default(now())
+  payload   Json
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @default(now())
+}
+
+enum NotificationType {
+  PRICE_CHANGE
+  NEW_COMMENT
 }

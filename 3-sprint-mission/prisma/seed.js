@@ -46,6 +46,9 @@ async function main() {
     skipDuplicates: true,
   });
 
+  await prisma.$executeRaw`
+  SELECT setval(pg_get_serial_sequence('\"Comment\"', 'id'), (SELECT COALESCE(MAX(id), 1) FROM \"Comment\"));`;
+
   await prisma.favorite.createMany({
     data: favorites,
     skipDuplicates: true,

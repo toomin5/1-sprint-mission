@@ -1,10 +1,13 @@
+import bcrypt from "bcrypt";
+const hashedPassword = await bcrypt.hash("password1", 10);
+
 export const users = [
   {
     id: 1,
     email: "user1@example.com",
     nickname: "닉네임1",
     image: null,
-    password: "hashed_password1", // 실제로는 bcrypt 등으로 해시된 값
+    password: hashedPassword,
     createdAt: new Date("2023-07-14T09:00:00Z"),
     updatedAt: new Date("2023-07-14T09:00:00Z"),
   },
@@ -13,7 +16,7 @@ export const users = [
     email: "user2@example.com",
     nickname: "닉네임2",
     image: null,
-    password: "hashed_password2",
+    password: hashedPassword,
     createdAt: new Date("2023-07-14T09:05:00Z"),
     updatedAt: new Date("2023-07-14T09:05:00Z"),
   },

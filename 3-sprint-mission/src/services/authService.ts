@@ -1,13 +1,17 @@
-import bcrypt from 'bcrypt';
-import * as usersRepository from '../repositories/usersRepository';
-import BadRequestError from '../lib/errors/BadRequestError';
-import NotFoundError from '../lib/errors/NotFoundError';
-import { generateTokens, verifyAccessToken, verifyRefreshToken } from '../lib/token';
-import UnauthorizedError from '../lib/errors/UnauthorizedError';
-import User from '../types/User';
+import bcrypt from "bcrypt";
+import * as usersRepository from "../repositories/usersRepository";
+import BadRequestError from "../lib/errors/BadRequestError";
+import NotFoundError from "../lib/errors/NotFoundError";
+import {
+  generateTokens,
+  verifyAccessToken,
+  verifyRefreshToken,
+} from "../lib/token";
+import UnauthorizedError from "../lib/errors/UnauthorizedError";
+import User from "../types/User";
 
-type RegisterData = Omit<User, 'id' | 'createdAt' | 'updatedAt'>;
-type LoginData = Pick<User, 'email' | 'password'>;
+type RegisterData = Omit<User, "id" | "createdAt" | "updatedAt">;
+type LoginData = Pick<User, "email" | "password">;
 
 async function verifyPassword(user: User, password: string) {
   return await bcrypt.compare(password, user.password);
@@ -21,7 +25,7 @@ async function hashPassword(password: string) {
 export async function register(data: RegisterData) {
   const existingUser = await usersRepository.getUserByEmail(data.email);
   if (existingUser) {
-    throw new BadRequestError('User already exists');
+    throw new BadRequestError("User already exists");
   }
 
   const hashedPassword = await hashPassword(data.password);
@@ -39,12 +43,11 @@ export async function register(data: RegisterData) {
 export async function login(data: LoginData) {
   const user = await usersRepository.getUserByEmail(data.email);
   if (!user) {
-    throw new BadRequestError('Invalid credentials');
+    throw new BadRequestError("Invalid email");
   }
-
   const isPasswordValid = await verifyPassword(user, data.password);
   if (!isPasswordValid) {
-    throw new BadRequestError('Invalid credentials');
+    throw new BadRequestError("Invalid password");
   }
 
   const { accessToken, refreshToken } = generateTokens(user.id);
@@ -56,14 +59,14 @@ export async function login(data: LoginData) {
 
 export async function refreshToken(refreshToken?: string) {
   if (!refreshToken) {
-    throw new BadRequestError('Invalid refresh token');
+    throw new BadRequestError("Invalid refresh token");
   }
 
   const { userId } = verifyRefreshToken(refreshToken);
 
   const user = await usersRepository.getUser(userId);
   if (!user) {
-    throw new BadRequestError('Invalid refresh token');
+    throw new BadRequestError("Invalid refresh token");
   }
 
   const { accessToken, refreshToken: newRefreshToken } = generateTokens(userId);
@@ -73,15 +76,19 @@ export async function refreshToken(refreshToken?: string) {
   };
 }
 
-export async function updateMyPassword(userId: User['id'], password: string, newPassword: string) {
+export async function updateMyPassword(
+  userId: User["id"],
+  password: string,
+  newPassword: string
+) {
   const user = await usersRepository.getUser(userId);
   if (!user) {
-    throw new NotFoundError('user', userId);
+    throw new NotFoundError("user", userId);
   }
 
   const isPasswordValid = await verifyPassword(user, password);
   if (!isPasswordValid) {
-    throw new BadRequestError('Invalid credentials');
+    throw new BadRequestError("Invalid credentials");
   }
 
   const hashedPassword = await hashPassword(newPassword);
@@ -90,13 +97,13 @@ export async function updateMyPassword(userId: User['id'], password: string, new
 
 export async function authenticate(accessToken?: string) {
   if (!accessToken) {
-    throw new UnauthorizedError('Unauthorized');
+    throw new UnauthorizedError("Unauthorized");
   }
 
   const { userId } = verifyAccessToken(accessToken);
   const user = await usersRepository.getUser(userId);
   if (!user) {
-    throw new UnauthorizedError('Unauthorized');
+    throw new UnauthorizedError("Unauthorized");
   }
   return user;
 }

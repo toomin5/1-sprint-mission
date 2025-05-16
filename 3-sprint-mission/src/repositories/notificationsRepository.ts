@@ -27,6 +27,13 @@ export async function getNotifications(
   return notifications;
 }
 
+export async function getCount(userId: number): Promise<number> {
+  const count = await prismaClient.notification.count({
+    where: { userId },
+  });
+  return count;
+}
+
 export async function patchReadStatus(id: number): Promise<Notification> {
   const notification = await prismaClient.notification.update({
     where: { id },

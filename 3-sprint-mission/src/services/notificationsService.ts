@@ -3,9 +3,12 @@ import { Notification } from "@prisma/client";
 
 export async function getUserNotifications(
   userId: number
-): Promise<Notification[]> {
-  const notifications = await notificationRepository.getNotifications(userId);
-  return notifications;
+): Promise<{ notifications: Notification[]; count: number }> {
+  const [notifications, count] = await Promise.all([
+    notificationRepository.getNotifications(userId),
+    notificationRepository.getCount(userId),
+  ]);
+  return { notifications, count };
 }
 
 export async function patchRead(id: number): Promise<Notification> {

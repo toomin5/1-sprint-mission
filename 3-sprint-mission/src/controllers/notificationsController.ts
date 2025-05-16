@@ -1,4 +1,7 @@
-import notificationResponseDTO from "../dto/notificationsDTO";
+import {
+  notificationResponseDTO,
+  notificationListResponseDTO,
+} from "../dto/notificationsDTO";
 import * as notificationsService from "../services/notificationsService";
 import { Request, Response, NextFunction } from "express";
 
@@ -8,9 +11,9 @@ export async function getNotifications(
   next: NextFunction
 ): Promise<void> {
   const userId = req.user.id;
-  const notifications = await notificationsService.getUserNotifications(userId);
-  const result = notifications.map(notificationResponseDTO);
-  res.status(200).send(result);
+  const { notifications, count } =
+    await notificationsService.getUserNotifications(userId);
+  res.status(200).send(notificationListResponseDTO(notifications, count));
 }
 
 export async function patchReadStatus(
@@ -20,5 +23,5 @@ export async function patchReadStatus(
 ): Promise<void> {
   const id = Number(req.params.notificationId);
   const notification = await notificationsService.patchRead(id);
-  res.status(204).json(notificationResponseDTO(notification));
+  res.status(200).json(notificationResponseDTO(notification));
 }

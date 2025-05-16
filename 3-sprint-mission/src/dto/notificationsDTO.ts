@@ -1,6 +1,6 @@
 import { Notification } from "@prisma/client";
 
-const notificationResponseDTO = (notification: Notification) => {
+export const notificationResponseDTO = (notification: Notification) => {
   return {
     id: notification.id,
     type: notification.type,
@@ -11,4 +11,12 @@ const notificationResponseDTO = (notification: Notification) => {
   };
 };
 
-export default notificationResponseDTO;
+export const notificationListResponseDTO = (
+  notifications: Notification[],
+  count: number
+) => {
+  return {
+    notifications: notifications.map(notificationResponseDTO),
+    count,
+  };
+};

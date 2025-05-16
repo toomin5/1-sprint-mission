@@ -17,3 +17,22 @@ export async function createNotification(
     },
   });
 }
+
+export async function getNotifications(
+  userId: number
+): Promise<Notification[]> {
+  const notifications = await prismaClient.notification.findMany({
+    where: { userId },
+  });
+  return notifications;
+}
+
+export async function patchReadStatus(id: number): Promise<Notification> {
+  const notification = await prismaClient.notification.update({
+    where: { id },
+    data: {
+      read: true,
+    },
+  });
+  return notification;
+}

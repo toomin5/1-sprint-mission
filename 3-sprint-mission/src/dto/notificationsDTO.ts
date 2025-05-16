@@ -1,10 +1,14 @@
-export class NotificationResponseDto {
-  id!: number;
-  message!: string;
-  isRead!: boolean;
-  createdAt!: Date;
-  articleId?: number;
-  productId?: number;
-}
+import { Notification } from "@prisma/client";
 
-// !는 할당이 필수적으로 된다는것을 명시
+const notificationResponseDTO = (notification: Notification) => {
+  return {
+    id: notification.id,
+    type: notification.type,
+    payload: notification.payload,
+    read: notification.read,
+    createdAt: notification.createdAt,
+    updatedAt: notification.updatedAt,
+  };
+};
+
+export default notificationResponseDTO;

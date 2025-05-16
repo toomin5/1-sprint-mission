@@ -9,6 +9,7 @@ import commentsRouter from "./routers/commentsRouter";
 import imagesRouter from "./routers/imagesRouter";
 import authRouter from "./routers/authRouter";
 import usersRouter from "./routers/usersRouter";
+import notificationRouter from "./routers/notificationsRouter";
 import http from "http";
 import { setupSocket } from "../src/services/socketService";
 import {
@@ -32,6 +33,7 @@ app.use("/comments", commentsRouter);
 app.use("/images", imagesRouter);
 app.use("/auth", authRouter);
 app.use("/users", usersRouter);
+app.use("/notifications", notificationRouter);
 
 app.use(defaultNotFoundHandler);
 app.use(globalErrorHandler);

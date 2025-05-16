@@ -9,13 +9,13 @@ import { LoginBodyStruct, RegisterBodyStruct } from "../structs/authStructs";
 import * as authService from "../services/authService";
 import userResponseDTO from "../dto/userResponseDTO";
 
-export async function register(req: Request, res: Response) {
+export async function register(req: Request, res: Response): Promise<void> {
   const data = create(req.body, RegisterBodyStruct);
   const user = await authService.register(data);
   res.status(201).json(userResponseDTO(user));
 }
 
-export async function login(req: Request, res: Response) {
+export async function login(req: Request, res: Response): Promise<void> {
   const data = create(req.body, LoginBodyStruct);
   const { accessToken, refreshToken } = await authService.login(data);
   setTokenCookies(res, accessToken, refreshToken);
@@ -23,12 +23,12 @@ export async function login(req: Request, res: Response) {
   res.status(200).send();
 }
 
-export async function logout(req: Request, res: Response) {
+export async function logout(req: Request, res: Response): Promise<void> {
   clearTokenCookies(res);
   res.status(200).send();
 }
 
-export async function refreshToken(req: Request, res: Response) {
+export async function refreshToken(req: Request, res: Response): Promise<void> {
   const refreshToken = req.cookies[REFRESH_TOKEN_COOKIE_NAME];
   const { accessToken, refreshToken: newRefreshToken } =
     await authService.refreshToken(refreshToken);
@@ -40,7 +40,7 @@ function setTokenCookies(
   res: Response,
   accessToken: string,
   refreshToken: string
-) {
+): void {
   res.cookie(ACCESS_TOKEN_COOKIE_NAME, accessToken, {
     httpOnly: true,
     secure: NODE_ENV === "production",

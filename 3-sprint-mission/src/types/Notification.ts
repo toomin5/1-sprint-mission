@@ -1,4 +1,4 @@
-export interface Notificatioon {
+export interface Notification {
   id: number;
   userId: number | null;
   payload: JSON;
@@ -6,3 +6,5 @@ export interface Notificatioon {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export default Notification;

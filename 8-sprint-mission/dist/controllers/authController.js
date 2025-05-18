@@ -66,6 +66,7 @@ function login(req, res) {
         const data = (0, superstruct_1.create)(req.body, authStructs_1.LoginBodyStruct);
         const { accessToken, refreshToken } = yield authService.login(data);
         setTokenCookies(res, accessToken, refreshToken);
+        console.log(data);
         res.status(200).send();
     });
 }
@@ -86,14 +87,14 @@ function refreshToken(req, res) {
 function setTokenCookies(res, accessToken, refreshToken) {
     res.cookie(constants_1.ACCESS_TOKEN_COOKIE_NAME, accessToken, {
         httpOnly: true,
-        secure: constants_1.NODE_ENV === 'production',
+        secure: constants_1.NODE_ENV === "production",
         maxAge: 1 * 60 * 60 * 1000, // 1 hour
     });
     res.cookie(constants_1.REFRESH_TOKEN_COOKIE_NAME, refreshToken, {
         httpOnly: true,
-        secure: constants_1.NODE_ENV === 'production',
+        secure: constants_1.NODE_ENV === "production",
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-        path: '/auth/refresh',
+        path: "/auth/refresh",
     });
 }
 function clearTokenCookies(res) {

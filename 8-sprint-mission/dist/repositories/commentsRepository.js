@@ -37,7 +37,7 @@ function getCommentList(where_1, _a) {
             cursor: cursor ? { id: cursor } : undefined,
             take: limit + 1,
             where,
-            orderBy: { createdAt: 'desc' },
+            orderBy: { createdAt: "desc" },
         });
         const comments = commentsWithCursor.slice(0, limit);
         const cursorComment = commentsWithCursor[commentsWithCursor.length - 1];

@@ -110,7 +110,10 @@ function getCommentList(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { id: articleId } = (0, superstruct_1.create)(req.params, commonStructs_1.IdParamsStruct);
         const { cursor, limit } = (0, superstruct_1.create)(req.query, commentsStruct_1.GetCommentListParamsStruct);
-        const result = yield commentsService.getCommentListByArticleId(articleId, { cursor, limit });
+        const result = yield commentsService.getCommentListByArticleId(articleId, {
+            cursor,
+            limit,
+        });
         res.send(result);
     });
 }

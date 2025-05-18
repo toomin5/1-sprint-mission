@@ -53,6 +53,9 @@ exports.deleteProduct = deleteProduct;
 const ForbiddenError_1 = __importDefault(require("../lib/errors/ForbiddenError"));
 const NotFoundError_1 = __importDefault(require("../lib/errors/NotFoundError"));
 const productsRepository = __importStar(require("../repositories/productsRepository"));
+const favoriteRepository = __importStar(require("../repositories/favoritesRepository"));
+const notificationRepository = __importStar(require("../repositories/notificationsRepository"));
+const socketService_1 = require("./socketService");
 function createProduct(data) {
     return __awaiter(this, void 0, void 0, function* () {
         const createdProduct = yield productsRepository.createProduct(data);
@@ -63,7 +66,7 @@ function getProduct(id) {
     return __awaiter(this, void 0, void 0, function* () {
         const product = yield productsRepository.getProductWithFavorites(id);
         if (!product) {
-            throw new NotFoundError_1.default('product', id);
+            throw new NotFoundError_1.default("product", id);
         }
         return product;
     });
@@ -78,12 +81,26 @@ function updateProduct(id, data) {
     return __awaiter(this, void 0, void 0, function* () {
         const existingProduct = yield productsRepository.getProduct(id);
         if (!existingProduct) {
-            throw new NotFoundError_1.default('product', id);
+            throw new NotFoundError_1.default("product", id);
         }
         if (existingProduct.userId !== data.userId) {
-            throw new ForbiddenError_1.default('Should be the owner of the product');
+            throw new ForbiddenError_1.default("Should be the owner of the product");
         }
         const updatedProduct = yield productsRepository.updateProductWithFavorites(id, data);
+        if (data.price && data.price !== existingProduct.price) {
+            const likeUsers = yield favoriteRepository.getLikedUsers(id);
+            for (const liked of likeUsers) {
+                const notification = yield notificationRepository.createNotification({
+                    userId: liked.userId,
+                    type: "PRICE_CHANGE",
+                    payload: {
+                        id,
+                        newPrice: data.price,
+                    },
+                });
+                (0, socketService_1.sendNotification)(liked.userId, notification);
+            }
+        }
         return updatedProduct;
     });
 }
@@ -91,10 +108,10 @@ function deleteProduct(id, userId) {
     return __awaiter(this, void 0, void 0, function* () {
         const existingProduct = yield productsRepository.getProduct(id);
         if (!existingProduct) {
-            throw new NotFoundError_1.default('product', id);
+            throw new NotFoundError_1.default("product", id);
         }
         if (existingProduct.userId !== userId) {
-            throw new ForbiddenError_1.default('Should be the owner of the product');
+            throw new ForbiddenError_1.default("Should be the owner of the product");
         }
         yield productsRepository.deleteProduct(id);
     });

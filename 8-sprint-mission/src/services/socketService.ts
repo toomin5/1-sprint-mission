@@ -26,11 +26,10 @@ export function setupSocket(server: http.Server) {
     }
   });
 
+  /* */
   io.on("connection", (socket) => {
     const userId = socket.data.userId;
     console.log("소켓 연결됨 - socket.id:", socket.id);
-    console.log("소켓 연결됨 - 유저 ID:", userId);
-    console.log("소켓 연결완료 - 유저 명 : ", userId);
     socket.join(userId.toString());
     console.log("소켓 - 방 참가 완료:", userId);
     socket.on("disconnect", () => {

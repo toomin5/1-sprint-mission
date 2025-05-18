@@ -9,43 +9,42 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createFavorite = createFavorite;
-exports.getFavorite = getFavorite;
-exports.deleteFavorite = deleteFavorite;
-exports.getLikedUsers = getLikedUsers;
+exports.createNotification = createNotification;
+exports.getNotifications = getNotifications;
+exports.getCount = getCount;
+exports.patchReadStatus = patchReadStatus;
 const prismaClient_1 = require("../lib/prismaClient");
-function createFavorite(data) {
+function createNotification(data) {
     return __awaiter(this, void 0, void 0, function* () {
-        const createdFavorite = yield prismaClient_1.prismaClient.favorite.create({
-            data,
+        return yield prismaClient_1.prismaClient.notification.create({
+            data: Object.assign(Object.assign({}, data), { read: false, payload: data.payload }),
         });
-        return createdFavorite;
     });
 }
-function getFavorite(productId, userId) {
+function getNotifications(userId) {
     return __awaiter(this, void 0, void 0, function* () {
-        const favorite = yield prismaClient_1.prismaClient.favorite.findFirst({
-            where: { productId, userId },
+        const notifications = yield prismaClient_1.prismaClient.notification.findMany({
+            where: { userId },
         });
-        return favorite;
+        return notifications;
     });
 }
-function deleteFavorite(id) {
+function getCount(userId) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield prismaClient_1.prismaClient.favorite.delete({
+        const count = yield prismaClient_1.prismaClient.notification.count({
+            where: { userId },
+        });
+        return count;
+    });
+}
+function patchReadStatus(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const notification = yield prismaClient_1.prismaClient.notification.update({
             where: { id },
-        });
-    });
-}
-function getLikedUsers(productId) {
-    return __awaiter(this, void 0, void 0, function* () {
-        return prismaClient_1.prismaClient.favorite.findMany({
-            where: {
-                productId,
-            },
-            select: {
-                userId: true,
+            data: {
+                read: true,
             },
         });
+        return notification;
     });
 }

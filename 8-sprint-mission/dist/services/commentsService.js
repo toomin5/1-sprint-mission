@@ -54,28 +54,44 @@ exports.deleteComment = deleteComment;
 const articlesRepository = __importStar(require("../repositories/articlesRepository"));
 const commentsRepository = __importStar(require("../repositories/commentsRepository"));
 const productsRepository = __importStar(require("../repositories/productsRepository"));
+const notificationRepository = __importStar(require("../repositories/notificationsRepository"));
 const BadRequestError_1 = __importDefault(require("../lib/errors/BadRequestError"));
 const ForbiddenError_1 = __importDefault(require("../lib/errors/ForbiddenError"));
 const NotFoundError_1 = __importDefault(require("../lib/errors/NotFoundError"));
+const socketService_1 = require("./socketService");
 function createComment(data) {
     return __awaiter(this, void 0, void 0, function* () {
         var _a, _b;
         if (!data.articleId && !data.productId) {
-            throw new BadRequestError_1.default('Either articleId or productId must be provided');
+            throw new BadRequestError_1.default("Either articleId or productId must be provided");
         }
+        let authorId = null;
         if (data.articleId) {
             const article = yield articlesRepository.getArticle(data.articleId);
             if (!article) {
-                throw new NotFoundError_1.default('article', data.articleId);
+                throw new NotFoundError_1.default("article", data.articleId);
             }
+            authorId = article.userId;
         }
         if (data.productId) {
             const product = yield productsRepository.getProduct(data.productId);
             if (!product) {
-                throw new NotFoundError_1.default('product', data.productId);
+                throw new NotFoundError_1.default("product", data.productId);
             }
+            authorId = product.userId;
         }
         const comment = yield commentsRepository.createComment(Object.assign(Object.assign({}, data), { articleId: (_a = data.articleId) !== null && _a !== void 0 ? _a : null, productId: (_b = data.productId) !== null && _b !== void 0 ? _b : null }));
+        if (authorId && authorId !== data.userId) {
+            const notification = yield notificationRepository.createNotification({
+                userId: authorId,
+                type: "NEW_COMMENT",
+                payload: {
+                    articleId: data.articleId,
+                    content: data.content,
+                },
+            });
+            (0, socketService_1.sendNotification)(authorId, notification);
+        }
         return comment;
     });
 }
@@ -83,7 +99,7 @@ function getComment(id) {
     return __awaiter(this, void 0, void 0, function* () {
         const comment = yield commentsRepository.getComment(id);
         if (!comment) {
-            throw new NotFoundError_1.default('comment', id);
+            throw new NotFoundError_1.default("comment", id);
         }
         return comment;
     });
@@ -92,7 +108,7 @@ function getCommentListByArticleId(articleId, params) {
     return __awaiter(this, void 0, void 0, function* () {
         const article = yield articlesRepository.getArticle(articleId);
         if (!article) {
-            throw new NotFoundError_1.default('article', articleId);
+            throw new NotFoundError_1.default("article", articleId);
         }
         const result = commentsRepository.getCommentList({ articleId }, params);
         return result;
@@ -102,7 +118,7 @@ function getCommentListByProductId(productId, params) {
     return __awaiter(this, void 0, void 0, function* () {
         const product = yield productsRepository.getProduct(productId);
         if (!product) {
-            throw new NotFoundError_1.default('product', productId);
+            throw new NotFoundError_1.default("product", productId);
         }
         const result = commentsRepository.getCommentList({ productId }, params);
         return result;
@@ -112,10 +128,10 @@ function updateComment(id, userId, content) {
     return __awaiter(this, void 0, void 0, function* () {
         const comment = yield commentsRepository.getComment(id);
         if (!comment) {
-            throw new NotFoundError_1.default('comment', id);
+            throw new NotFoundError_1.default("comment", id);
         }
         if (comment.userId !== userId) {
-            throw new ForbiddenError_1.default('Should be the owner of the comment');
+            throw new ForbiddenError_1.default("Should be the owner of the comment");
         }
         return commentsRepository.updateComment(id, { content });
     });
@@ -124,10 +140,10 @@ function deleteComment(id, userId) {
     return __awaiter(this, void 0, void 0, function* () {
         const comment = yield commentsRepository.getComment(id);
         if (!comment) {
-            throw new NotFoundError_1.default('comment', id);
+            throw new NotFoundError_1.default("comment", id);
         }
         if (comment.userId !== userId) {
-            throw new ForbiddenError_1.default('Should be the owner of the comment');
+            throw new ForbiddenError_1.default("Should be the owner of the comment");
         }
         yield commentsRepository.deleteComment(id);
     });

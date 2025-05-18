@@ -51,7 +51,10 @@ function getProductListWithFavorites(_a) {
     return __awaiter(this, arguments, void 0, function* ({ page, pageSize, orderBy, keyword }, { userId, } = {}) {
         const where = keyword
             ? {
-                OR: [{ name: { contains: keyword } }, { description: { contains: keyword } }],
+                OR: [
+                    { name: { contains: keyword } },
+                    { description: { contains: keyword } },
+                ],
             }
             : {};
         const totalCount = yield prismaClient_1.prismaClient.product.count({
@@ -60,7 +63,7 @@ function getProductListWithFavorites(_a) {
         const products = yield prismaClient_1.prismaClient.product.findMany({
             skip: (page - 1) * pageSize,
             take: pageSize,
-            orderBy: orderBy === 'recent' ? { id: 'desc' } : { id: 'asc' },
+            orderBy: orderBy === "recent" ? { id: "desc" } : { id: "asc" },
             where,
             include: {
                 favorites: true,
@@ -79,7 +82,10 @@ function getFavoriteProductListByOwnerId(ownerId_1, _a) {
     return __awaiter(this, arguments, void 0, function* (ownerId, { page, pageSize, orderBy, keyword }) {
         const where = keyword
             ? {
-                OR: [{ name: { contains: keyword } }, { description: { contains: keyword } }],
+                OR: [
+                    { name: { contains: keyword } },
+                    { description: { contains: keyword } },
+                ],
             }
             : {};
         const totalCount = yield prismaClient_1.prismaClient.product.count({
@@ -92,7 +98,7 @@ function getFavoriteProductListByOwnerId(ownerId_1, _a) {
         const products = yield prismaClient_1.prismaClient.product.findMany({
             skip: (page - 1) * pageSize,
             take: pageSize,
-            orderBy: orderBy === 'recent' ? { id: 'desc' } : { id: 'asc' },
+            orderBy: orderBy === "recent" ? { id: "desc" } : { id: "asc" },
             where: Object.assign(Object.assign({}, where), { favorites: {
                     some: {
                         userId: ownerId,

@@ -71,7 +71,7 @@ function register(data) {
     return __awaiter(this, void 0, void 0, function* () {
         const existingUser = yield usersRepository.getUserByEmail(data.email);
         if (existingUser) {
-            throw new BadRequestError_1.default('User already exists');
+            throw new BadRequestError_1.default("User already exists");
         }
         const hashedPassword = yield hashPassword(data.password);
         const user = yield usersRepository.createUser({
@@ -87,11 +87,11 @@ function login(data) {
     return __awaiter(this, void 0, void 0, function* () {
         const user = yield usersRepository.getUserByEmail(data.email);
         if (!user) {
-            throw new BadRequestError_1.default('Invalid credentials');
+            throw new BadRequestError_1.default("Invalid email");
         }
         const isPasswordValid = yield verifyPassword(user, data.password);
         if (!isPasswordValid) {
-            throw new BadRequestError_1.default('Invalid credentials');
+            throw new BadRequestError_1.default("Invalid password");
         }
         const { accessToken, refreshToken } = (0, token_1.generateTokens)(user.id);
         return {
@@ -103,12 +103,12 @@ function login(data) {
 function refreshToken(refreshToken) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!refreshToken) {
-            throw new BadRequestError_1.default('Invalid refresh token');
+            throw new BadRequestError_1.default("Invalid refresh token");
         }
         const { userId } = (0, token_1.verifyRefreshToken)(refreshToken);
         const user = yield usersRepository.getUser(userId);
         if (!user) {
-            throw new BadRequestError_1.default('Invalid refresh token');
+            throw new BadRequestError_1.default("Invalid refresh token");
         }
         const { accessToken, refreshToken: newRefreshToken } = (0, token_1.generateTokens)(userId);
         return {
@@ -121,11 +121,11 @@ function updateMyPassword(userId, password, newPassword) {
     return __awaiter(this, void 0, void 0, function* () {
         const user = yield usersRepository.getUser(userId);
         if (!user) {
-            throw new NotFoundError_1.default('user', userId);
+            throw new NotFoundError_1.default("user", userId);
         }
         const isPasswordValid = yield verifyPassword(user, password);
         if (!isPasswordValid) {
-            throw new BadRequestError_1.default('Invalid credentials');
+            throw new BadRequestError_1.default("Invalid credentials");
         }
         const hashedPassword = yield hashPassword(newPassword);
         yield usersRepository.updateUser(userId, { password: hashedPassword });
@@ -134,12 +134,12 @@ function updateMyPassword(userId, password, newPassword) {
 function authenticate(accessToken) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!accessToken) {
-            throw new UnauthorizedError_1.default('Unauthorized');
+            throw new UnauthorizedError_1.default("Unauthorized");
         }
         const { userId } = (0, token_1.verifyAccessToken)(accessToken);
         const user = yield usersRepository.getUser(userId);
         if (!user) {
-            throw new UnauthorizedError_1.default('Unauthorized');
+            throw new UnauthorizedError_1.default("Unauthorized");
         }
         return user;
     });

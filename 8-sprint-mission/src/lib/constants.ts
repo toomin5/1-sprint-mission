@@ -22,8 +22,8 @@ if (NODE_ENV === "production") {
   if (
     !AWS_REGION ||
     !AWS_ACCESS_KEY_ID ||
-    AWS_SECRET_ACCESS_KEY ||
-    AWS_S3_BUCKET_NAME
+    !AWS_SECRET_ACCESS_KEY ||
+    !AWS_S3_BUCKET_NAME
   ) {
     throw new Error("AWS 설정이 필요함");
   }

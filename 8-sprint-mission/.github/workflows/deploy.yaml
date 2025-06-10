@@ -23,5 +23,5 @@ jobs:
             npm install
             npm run build
             npm run prisma:deploy # 예: prisma migrate deploy로 마이그레이션 적용하기
-            pm2 reload your-app-name # PM2로 재실행
+            pm2 reload panda-market # PM2로 재실행
             echo "Deployment successful!"
